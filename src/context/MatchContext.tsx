@@ -23,13 +23,13 @@ const HISTORY_STACK_KEY = 'cricket_history_stack_v3';
 const SAVED_MATCHES_KEY = 'cricket_saved_matches_v3';
 const DARK_MODE_KEY = 'cricket_dark_mode_v3';
 
-interface ExtendedState extends MatchContextState {
+export interface ExtendedState extends MatchContextState {
   showNewBowlerModal: boolean;
   showNewBatsmanModal: boolean;
   replacingBatsmanRole: 'striker' | 'nonStriker';
 }
 
-type ExtendedAction =
+export type ExtendedAction =
   | MatchAction
   | { type: 'SET_TAB'; payload: { tab: 'scoring' | 'scorecard' | 'history' } }
   | { type: 'SELECT_SCORECARD_INNINGS'; payload: { inningsNumber: 1 | 2 } }
@@ -38,7 +38,7 @@ type ExtendedAction =
   | { type: 'CLOSE_BOWLER_MODAL' }
   | { type: 'CLOSE_BATSMAN_MODAL' };
 
-const initialInnings = (
+export const initialInnings = (
   inningsNumber: 1 | 2,
   battingTeamId: 'teamA' | 'teamB',
   bowlingTeamId: 'teamA' | 'teamB',
@@ -92,7 +92,7 @@ function createMatchSummary(match: Match): MatchSummary {
   };
 }
 
-function matchReducer(state: ExtendedState, action: ExtendedAction): ExtendedState {
+export function matchReducer(state: ExtendedState, action: ExtendedAction): ExtendedState {
   switch (action.type) {
     case 'START_MATCH': {
       const { teamA, teamB, rules, toss, strikerId, nonStrikerId, bowlerId } = action.payload;
@@ -1366,7 +1366,7 @@ interface MatchContextType extends ExtendedState {
   dispatch: React.Dispatch<ExtendedAction>;
 }
 
-const MatchContext = createContext<MatchContextType | undefined>(undefined);
+export const MatchContext = createContext<MatchContextType | undefined>(undefined);
 
 export const MatchProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(
