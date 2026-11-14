@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { UserCheck } from 'lucide-react';
 import { useMatch } from '../context/MatchContext';
 import { useHaptic } from '../hooks/useHaptic';
 import { getAvailableBatsmen } from '../utils/cricket';
@@ -13,6 +13,17 @@ export const NextBatterSheet: React.FC<NextBatterSheetProps> = ({ isOpen, onClos
   const { match, dispatch, replacingBatsmanRole } = useMatch();
   const { tap } = useHaptic();
   const [typedName, setTypedName] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTypedName('');
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   if (!isOpen || !match) return null;
 
@@ -59,63 +70,57 @@ export const NextBatterSheet: React.FC<NextBatterSheetProps> = ({ isOpen, onClos
 
         <div className="pb-3 border-b border-slate-200 dark:border-slate-800">
           <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-            Next Batter ({replacingBatsmanRole === 'striker' ? 'Striker' : 'Non-Striker'})
+            New Batter ({replacingBatsmanRole === 'striker' ? 'Striker' : 'Non-Striker'})
           </h2>
           <p className="text-xs text-slate-500">
-            Select an available batter or type a new player name
+            Type batter name or pick from available players
           </p>
         </div>
 
-        {/* 1. Autofocused text input with Add & Continue button */}
+        {/* 1. Autofocused text input bar with Set Batter button */}
         <form onSubmit={handleAddNewBatter} className="mt-3 flex gap-2">
           <input
+            ref={inputRef}
             type="text"
-            autoFocus
             value={typedName}
             onChange={(e) => setTypedName(e.target.value)}
-            placeholder="Type batter name"
-            className="flex-1 h-11 px-3 text-xs rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-700 font-medium"
+            placeholder="Enter new batter name..."
+            className="flex-1 h-12 px-3 text-sm rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-700 font-medium"
           />
           <button
             type="submit"
             disabled={!typedName.trim()}
-            className={`h-11 px-3 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${
+            className={`h-12 px-4 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5 ${
               typedName.trim()
                 ? 'bg-emerald-700 hover:bg-emerald-800 text-white active:bg-emerald-900'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-700'
             }`}
           >
-            <Plus size={14} strokeWidth={2} />
-            <span>Add & Continue</span>
+            <UserCheck size={16} strokeWidth={2} />
+            <span>Set Batter</span>
           </button>
         </form>
 
-        {/* 2. List of remaining batters */}
-        <div className="mt-3">
-          <span className="text-[11px] uppercase tracking-wide text-slate-400 font-medium block mb-1.5">
-            Available Batters ({battingTeam.name})
-          </span>
-
-          <div className="border border-slate-200 dark:border-slate-800 rounded-md divide-y divide-slate-100 dark:divide-slate-800 max-h-56 overflow-y-auto">
-            {availableBatsmen.length === 0 ? (
-              <div className="p-4 text-center text-xs text-slate-400 italic">
-                No remaining unbatted players. Type a name above to add a new player.
-              </div>
-            ) : (
-              availableBatsmen.map((player) => (
+        {/* 2. Quick chips or list of available unbatted players */}
+        {availableBatsmen.length > 0 && (
+          <div className="mt-3">
+            <span className="text-[11px] uppercase tracking-wide text-slate-400 font-medium block mb-1.5">
+              Available Players ({battingTeam.name})
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {availableBatsmen.map((player) => (
                 <button
                   key={player.id}
                   type="button"
                   onClick={() => handleSelectExistingBatter(player.id)}
-                  className="w-full px-3 py-2.5 text-xs text-left hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 transition-colors flex items-center justify-between"
+                  className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:bg-slate-300 rounded-md text-xs font-medium text-slate-800 dark:text-slate-200 transition-colors"
                 >
-                  <span className="font-medium text-slate-900 dark:text-slate-100">{player.name}</span>
-                  <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium">Select</span>
+                  {player.name}
                 </button>
-              ))
-            )}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

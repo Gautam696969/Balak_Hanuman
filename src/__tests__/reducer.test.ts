@@ -216,4 +216,20 @@ describe('Match Reducer Core Game Logic & Custom Rules', () => {
     const maxWicketsLMS = matchLMS.teamA.players.length; // 5 wickets (all out)
     expect(maxWicketsLMS).toBe(5);
   });
+
+  it('supports typing incoming batter name dynamically on wicket dismissal', () => {
+    const match = createMockMatch({}, 3);
+    const inn = match.innings[0];
+
+    // Dismiss striker p_1 and supply next batter name directly
+    const newBatterName = 'Kapil';
+    const newPlayer: Player = { id: generateId(), name: newBatterName };
+    match.teamA.players.push(newPlayer);
+    inn.strikerId = newPlayer.id;
+    inn.wickets += 1;
+
+    expect(match.teamA.players.some((p) => p.name === 'Kapil')).toBe(true);
+    expect(inn.strikerId).toBe(newPlayer.id);
+    expect(inn.wickets).toBe(1);
+  });
 });

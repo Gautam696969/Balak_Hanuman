@@ -178,9 +178,14 @@ export const Live: React.FC = () => {
         onClose={() => setShowWicketModal(false)}
       />
 
+      {/* Next Batter Sheet (after wicket or retired hurt) */}
+      <NextBatterSheet
+        isOpen={showNewBatsmanModal}
+      />
+
       {/* 2. Over End -> Next Bowler Input (cannot be dismissed until bowler chosen) */}
       <NextBowlerSheet
-        isOpen={showNewBowlerModal}
+        isOpen={showNewBowlerModal && !showNewBatsmanModal}
       />
 
       {/* Mid-Over Bowler Change Sheet */}
@@ -188,11 +193,6 @@ export const Live: React.FC = () => {
         isOpen={showMidOverBowlerChange}
         isMidOverChange
         onClose={() => setShowMidOverBowlerChange(false)}
-      />
-
-      {/* Next Batter Sheet (after wicket or retired hurt) */}
-      <NextBatterSheet
-        isOpen={showNewBatsmanModal}
       />
 
       {/* Full In-Match Editor Modal */}

@@ -14,11 +14,12 @@ export const WicketModal: React.FC<WicketModalProps> = ({ isOpen, onClose }) => 
   const { match, dispatch } = useMatch();
   const { wicket: triggerWicketHaptic, tap } = useHaptic();
 
-  const [wicketType, setWicketType] = useState<WicketType>('caught');
+  const [wicketType, setWicketType] = useState<WicketType>('bowled');
   const [outBatsmanRole, setOutBatsmanRole] = useState<'striker' | 'nonStriker'>('striker');
   const [fielderId, setFielderId] = useState<string>('');
   const [runsCompleted, setRunsCompleted] = useState<number>(0);
   const [nextBatsmanId, setNextBatsmanId] = useState<string>('');
+  const [nextBatterName, setNextBatterName] = useState<string>('');
 
   if (!isOpen || !match) return null;
 
@@ -37,8 +38,8 @@ export const WicketModal: React.FC<WicketModalProps> = ({ isOpen, onClose }) => 
   const availableBatsmen = getAvailableBatsmen(battingTeam, currentInnings);
 
   const wicketOptions: { type: WicketType; label: string; needsFielder?: boolean }[] = [
-    { type: 'caught', label: 'Caught', needsFielder: true },
     { type: 'bowled', label: 'Bowled' },
+    { type: 'caught', label: 'Caught', needsFielder: true },
     { type: 'lbw', label: 'LBW' },
     { type: 'runOut', label: 'Run Out', needsFielder: true },
     { type: 'stumped', label: 'Stumped', needsFielder: true },
@@ -47,11 +48,6 @@ export const WicketModal: React.FC<WicketModalProps> = ({ isOpen, onClose }) => 
 
   const handleConfirmWicket = () => {
     if (!outBatsman) return;
-
-    if (!isAllOut && availableBatsmen.length > 0 && !nextBatsmanId) {
-      alert('Please select the next batsman.');
-      return;
-    }
 
     triggerWicketHaptic();
 
@@ -62,7 +58,8 @@ export const WicketModal: React.FC<WicketModalProps> = ({ isOpen, onClose }) => 
         outBatsmanId: outBatsman.id,
         fielderId: fielderId || undefined,
         runsCompleted: wicketType === 'runOut' ? runsCompleted : 0,
-        nextBatsmanId: isAllOut ? undefined : nextBatsmanId,
+        nextBatsmanId: isAllOut ? undefined : (nextBatsmanId || undefined),
+        nextBatsmanName: isAllOut ? undefined : (nextBatterName.trim() || undefined),
       },
     });
 
@@ -236,21 +233,51 @@ export const WicketModal: React.FC<WicketModalProps> = ({ isOpen, onClose }) => 
             <label className="text-xs uppercase tracking-wide text-slate-500 font-medium block mb-1">
               Next Batter
             </label>
-            {availableBatsmen.length === 0 ? (
-              <p className="text-xs text-slate-400 italic">No more batsmen available.</p>
-            ) : (
-              <select
-                value={nextBatsmanId}
-                onChange={(e) => setNextBatsmanId(e.target.value)}
-                className="w-full h-10 px-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:ring-1 focus:ring-emerald-700 focus:outline-none font-medium"
-              >
-                <option value="">-- Select Incoming Batter --</option>
-                {availableBatsmen.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
+            <input
+              type="text"
+              value={nextBatterName}
+              onChange={(e) => {
+                setNextBatterName(e.target.value);
+                setNextBatsmanId('');
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleConfirmWicket();
+                }
+              }}
+              placeholder="Enter new batter name..."
+              className="w-full h-11 px-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:ring-1 focus:ring-emerald-700 focus:outline-none font-medium"
+            />
+
+            {/* Quick chips if players exist */}
+            {availableBatsmen.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1.5 items-center">
+                <span className="text-[11px] text-slate-400">Or select:</span>
+                {availableBatsmen.map((p) => {
+                  const isSelected =
+                    nextBatsmanId === p.id ||
+                    nextBatterName.toLowerCase() === p.name.toLowerCase();
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => {
+                        tap();
+                        setNextBatsmanId(p.id);
+                        setNextBatterName(p.name);
+                      }}
+                      className={`px-2.5 py-1 rounded text-xs transition-colors ${
+                        isSelected
+                          ? 'bg-emerald-700 text-white font-medium'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {p.name}
+                    </button>
+                  );
+                })}
+              </div>
             )}
           </div>
         )}

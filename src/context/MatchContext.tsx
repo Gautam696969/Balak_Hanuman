@@ -558,10 +558,34 @@ function matchReducer(state: ExtendedState, action: ExtendedAction): ExtendedSta
         fielderId,
         runsCompleted = 0,
         nextBatsmanId,
+        nextBatsmanName,
       } = action.payload;
 
       const battingTeam = inn.battingTeamId === 'teamA' ? currentMatch.teamA : currentMatch.teamB;
       const bowlingTeam = inn.bowlingTeamId === 'teamA' ? currentMatch.teamA : currentMatch.teamB;
+
+      let resolvedNextBatsmanId = nextBatsmanId;
+      if (!resolvedNextBatsmanId && nextBatsmanName && nextBatsmanName.trim()) {
+        const cleanName = nextBatsmanName.trim();
+        const existing = battingTeam.players.find(
+          (p) => p.name.toLowerCase() === cleanName.toLowerCase()
+        );
+        if (existing) {
+          resolvedNextBatsmanId = existing.id;
+        } else {
+          const newPlayer: Player = {
+            id: generateId(),
+            name: cleanName,
+          };
+          battingTeam.players = [...battingTeam.players, newPlayer];
+          if (inn.battingTeamId === 'teamA') {
+            currentMatch.teamA = { ...battingTeam, players: [...battingTeam.players] };
+          } else {
+            currentMatch.teamB = { ...battingTeam, players: [...battingTeam.players] };
+          }
+          resolvedNextBatsmanId = newPlayer.id;
+        }
+      }
 
       const outBatsman = battingTeam.players.find((p) => p.id === outBatsmanId);
       const fielder = bowlingTeam.players.find((p) => p.id === fielderId);
@@ -808,11 +832,11 @@ function matchReducer(state: ExtendedState, action: ExtendedAction): ExtendedSta
 
       let showNewBatsmanModal = false;
 
-      if (nextBatsmanId) {
+      if (resolvedNextBatsmanId) {
         if (replacedRole === 'striker') {
-          newStrikerId = nextBatsmanId;
+          newStrikerId = resolvedNextBatsmanId;
         } else {
-          newNonStrikerId = nextBatsmanId;
+          newNonStrikerId = resolvedNextBatsmanId;
         }
       } else {
         showNewBatsmanModal = true;

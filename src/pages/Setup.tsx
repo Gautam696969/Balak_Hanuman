@@ -21,30 +21,20 @@ export const Setup: React.FC = () => {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 
   // STEP 1: Teams
-  const [team1Name, setTeam1Name] = useState('Gujarat Lions');
-  const [team1Short, setTeam1Short] = useState('GL');
-  const [team2Name, setTeam2Name] = useState('Mumbai Strikers');
-  const [team2Short, setTeam2Short] = useState('MS');
+  const [team1Name, setTeam1Name] = useState('Team 1');
+  const [team1Short, setTeam1Short] = useState('T1');
+  const [team2Name, setTeam2Name] = useState('Team 2');
+  const [team2Short, setTeam2Short] = useState('T2');
 
   // STEP 2: Players
   const [team1Players, setTeam1Players] = useState<Player[]>([
-    { id: generateId(), name: 'Suresh Raina', isCaptain: true, isKeeper: false },
-    { id: generateId(), name: 'Brendon McCullum', isCaptain: false, isKeeper: false },
-    { id: generateId(), name: 'Dwayne Smith', isCaptain: false, isKeeper: false },
-    { id: generateId(), name: 'Dinesh Karthik', isCaptain: false, isKeeper: true },
-    { id: generateId(), name: 'Ravindra Jadeja', isCaptain: false, isKeeper: false },
-    { id: generateId(), name: 'Dwayne Bravo', isCaptain: false, isKeeper: false },
-    { id: generateId(), name: 'Praveen Kumar', isCaptain: false, isKeeper: false },
+    { id: generateId(), name: 'Player 1', isCaptain: true, isKeeper: false },
+    { id: generateId(), name: 'Player 2', isCaptain: false, isKeeper: false },
   ]);
 
   const [team2Players, setTeam2Players] = useState<Player[]>([
-    { id: generateId(), name: 'Rohit Sharma', isCaptain: true, isKeeper: false },
-    { id: generateId(), name: 'Quinton de Kock', isCaptain: false, isKeeper: true },
-    { id: generateId(), name: 'Suryakumar Yadav', isCaptain: false, isKeeper: false },
-    { id: generateId(), name: 'Kieron Pollard', isCaptain: false, isKeeper: false },
-    { id: generateId(), name: 'Hardik Pandya', isCaptain: false, isKeeper: false },
-    { id: generateId(), name: 'Jasprit Bumrah', isCaptain: false, isKeeper: false },
-    { id: generateId(), name: 'Lasith Malinga', isCaptain: false, isKeeper: false },
+    { id: generateId(), name: 'Player 1', isCaptain: true, isKeeper: false },
+    { id: generateId(), name: 'Player 2', isCaptain: false, isKeeper: false },
   ]);
 
   const [activeRosterTeam, setActiveRosterTeam] = useState<'teamA' | 'teamB'>('teamA');
@@ -303,7 +293,7 @@ export const Setup: React.FC = () => {
                   required
                   value={team1Name}
                   onChange={(e) => setTeam1Name(e.target.value)}
-                  placeholder="e.g. Gujarat Lions"
+                  placeholder="e.g. Team 1"
                   className="flex-1 h-11 px-3 text-xs rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-700 font-medium"
                 />
                 <input
@@ -311,7 +301,7 @@ export const Setup: React.FC = () => {
                   maxLength={4}
                   value={team1Short}
                   onChange={(e) => setTeam1Short(e.target.value.toUpperCase())}
-                  placeholder="GL"
+                  placeholder="T1"
                   className="w-16 h-11 px-2 text-center text-xs uppercase font-mono rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-700"
                 />
               </div>
@@ -327,7 +317,7 @@ export const Setup: React.FC = () => {
                   required
                   value={team2Name}
                   onChange={(e) => setTeam2Name(e.target.value)}
-                  placeholder="e.g. Mumbai Strikers"
+                  placeholder="e.g. Team 2"
                   className="flex-1 h-11 px-3 text-xs rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-700 font-medium"
                 />
                 <input
@@ -335,7 +325,7 @@ export const Setup: React.FC = () => {
                   maxLength={4}
                   value={team2Short}
                   onChange={(e) => setTeam2Short(e.target.value.toUpperCase())}
-                  placeholder="MS"
+                  placeholder="T2"
                   className="w-16 h-11 px-2 text-center text-xs uppercase font-mono rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-700"
                 />
               </div>
