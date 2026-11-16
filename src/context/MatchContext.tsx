@@ -21,7 +21,7 @@ import {
 const CURRENT_MATCH_KEY = 'cricket_current_match_v3';
 const HISTORY_STACK_KEY = 'cricket_history_stack_v3';
 const SAVED_MATCHES_KEY = 'cricket_saved_matches_v3';
-const DARK_MODE_KEY = 'cricket_dark_mode_v3';
+const DARK_MODE_KEY = 'balak_hanuman_theme_v1';
 
 export interface ExtendedState extends MatchContextState {
   showNewBowlerModal: boolean;
@@ -1393,7 +1393,8 @@ export const MatchProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           if (storedTheme !== null) {
             darkMode = JSON.parse(storedTheme);
           } else {
-            darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            // First time opening on any device: default is ALWAYS light mode (not system dark mode)
+            darkMode = false;
           }
         } catch (e) {
           console.warn('Failed to parse localStorage on boot:', e);
