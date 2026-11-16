@@ -279,7 +279,7 @@ export const Setup: React.FC = () => {
                 Team Names
               </h2>
               <p className="text-xs text-slate-500">
-                Enter names and optional 3-letter abbreviations for the scoreboard
+                Enter team names. You can also add a short 3-letter name
               </p>
             </div>
 
