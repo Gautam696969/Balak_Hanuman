@@ -108,9 +108,9 @@ export const Setup: React.FC = () => {
   const [hasMaxOvers, setHasMaxOvers] = useState<boolean>(true);
   const [wideRuns, setWideRuns] = useState<number>(1);
   const [noBallRuns, setNoBallRuns] = useState<number>(1);
-  const [rebowlWide, setRebowlWide] = useState<boolean>(true);
-  const [rebowlNoBall, setRebowlNoBall] = useState<boolean>(true);
-  const [freeHitOnNoBall, setFreeHitOnNoBall] = useState<boolean>(true);
+  const [rebowlWide, setRebowlWide] = useState<boolean>(false);
+  const [rebowlNoBall, setRebowlNoBall] = useState<boolean>(false);
+  const [freeHitOnNoBall, setFreeHitOnNoBall] = useState<boolean>(false);
   const [lastManStands, setLastManStands] = useState<boolean>(false);
 
   // STEP 4: Toss & Openers
@@ -720,9 +720,6 @@ export const Setup: React.FC = () => {
               <div className="bg-gradient-to-r from-amber-600 to-amber-700 px-4 py-3 text-white flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div>
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-amber-200 block">
-                      Team A
-                    </span>
                     <h3 className="text-base font-bold tracking-tight">
                       {groupTeamA.name} ({groupTeamA.shortName})
                     </h3>
@@ -984,9 +981,6 @@ export const Setup: React.FC = () => {
               <div className="bg-gradient-to-r from-orange-600 to-orange-700 px-4 py-3 text-white flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div>
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-orange-200 block">
-                      Team B
-                    </span>
                     <h3 className="text-base font-bold tracking-tight">
                       {groupTeamB.name} ({groupTeamB.shortName})
                     </h3>
@@ -1513,7 +1507,7 @@ export const Setup: React.FC = () => {
                 </div>
 
                 <div className="flex gap-1 flex-1">
-                  {[2, 5, 10, 20].map((ov) => (
+                  {[8,10,12,20].map((ov) => (
                     <button
                       key={ov}
                       type="button"

@@ -29,9 +29,9 @@ export interface MatchRules {
   maxOversPerBowler?: number; // optional, e.g. ceil(overs/5)
   wideRuns: number; // default 1
   noBallRuns: number; // default 1
-  rebowlWide: boolean; // default true
-  rebowlNoBall: boolean; // default true
-  freeHitOnNoBall: boolean; // default true
+  rebowlWide: boolean; // default false
+  rebowlNoBall: boolean; // default false
+  freeHitOnNoBall: boolean; // default false
   lastManStands: boolean; // default false
 }
 
