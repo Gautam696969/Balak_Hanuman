@@ -19,8 +19,8 @@ import { useHaptic } from '../hooks/useHaptic';
 import { generateId } from '../utils/cricket';
 
 // Default Group Team data (Balak Hanuman group teams)
-const DEFAULT_VIKAS_PLAYERS = ['Rohit', 'Amit', 'Mohit', 'Bottle'];
-const DEFAULT_VIPUL_PLAYERS = ['Sashi', 'JD', 'Bhavesh', 'Aman'];
+const DEFAULT_VIKAS_PLAYERS = ['Vikas', 'Rohit', 'Amit', 'Mohit', 'Bottle', 'Gautam', 'Manoj', 'Gopal', 'Avinash', 'Satyam', 'Pawan', 'Akshay','Pandey'];
+const DEFAULT_VIPUL_PLAYERS = ['Sashi', 'Vipul','JD', 'Bhavesh', 'Aman','Mohit', 'Vinay',  'Bittu', 'Akshay',  'Pawan', 'Satyam', 'Gopal' ];
 
 interface GroupTeamDraft {
   name: string;
@@ -1464,7 +1464,7 @@ export const Setup: React.FC = () => {
                 Total Overs Per Innings
               </label>
               <div className="flex items-center gap-2">
-                <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-md overflow-hidden bg-white dark:bg-slate-800">
+                <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-md overflow-hidden bg-white dark:bg-slate-800 focus-within:ring-1 focus-within:ring-emerald-700 dark:focus-within:ring-emerald-500 focus-within:border-emerald-700 dark:focus-within:border-emerald-500 transition-colors">
                   <button
                     type="button"
                     onClick={() => {
@@ -1475,7 +1475,8 @@ export const Setup: React.FC = () => {
                         return n;
                       });
                     }}
-                    className="w-10 h-10 flex items-center justify-center text-slate-600 hover:bg-slate-50 active:bg-slate-100"
+                    className="w-10 h-10 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/60 active:bg-slate-200 dark:active:bg-slate-700 transition-colors select-none"
+                    aria-label="Decrease total overs"
                   >
                     <Minus size={15} strokeWidth={1.75} />
                   </button>
@@ -1491,7 +1492,8 @@ export const Setup: React.FC = () => {
                         setMaxOversPerBowler(Math.max(1, Math.ceil(v / 5)));
                       }
                     }}
-                    className="w-14 h-10 text-center text-xs font-semibold tabular-nums text-slate-900 dark:text-slate-100 border-x border-slate-200 dark:border-slate-700"
+                    placeholder="5"
+                    className="w-14 h-10 text-center text-xs font-semibold tabular-nums border-x border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                   <button
                     type="button"
@@ -1503,7 +1505,8 @@ export const Setup: React.FC = () => {
                         return n;
                       });
                     }}
-                    className="w-10 h-10 flex items-center justify-center text-slate-600 hover:bg-slate-50 active:bg-slate-100"
+                    className="w-10 h-10 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/60 active:bg-slate-200 dark:active:bg-slate-700 transition-colors select-none"
+                    aria-label="Increase total overs"
                   >
                     <Plus size={15} strokeWidth={1.75} />
                   </button>
@@ -1519,10 +1522,10 @@ export const Setup: React.FC = () => {
                         setTotalOvers(ov);
                         setMaxOversPerBowler(Math.max(1, Math.ceil(ov / 5)));
                       }}
-                      className={`flex-1 h-10 rounded-md border text-xs tabular-nums font-medium ${
+                      className={`flex-1 h-10 rounded-md border text-xs tabular-nums font-medium transition-colors ${
                         totalOvers === ov
                           ? 'border-emerald-700 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 font-semibold'
-                          : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                          : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
                       }`}
                     >
                       {ov} ov
@@ -1557,7 +1560,7 @@ export const Setup: React.FC = () => {
                     max={totalOvers}
                     value={maxOversPerBowler}
                     onChange={(e) => setMaxOversPerBowler(parseInt(e.target.value, 10) || 1)}
-                    className="w-24 h-10 px-3 text-xs rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 tabular-nums"
+                    className="w-24 h-10 px-3 text-xs rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 tabular-nums focus:outline-none focus:ring-1 focus:ring-emerald-700 dark:focus:ring-emerald-500 placeholder-slate-400 dark:placeholder-slate-500"
                   />
                   <span className="text-xs text-slate-400">
                     Auto-suggested: {Math.ceil(totalOvers / 5)} overs
@@ -1578,7 +1581,7 @@ export const Setup: React.FC = () => {
                   max="10"
                   value={wideRuns}
                   onChange={(e) => setWideRuns(parseInt(e.target.value, 10) || 0)}
-                  className="w-full h-10 px-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 tabular-nums"
+                  className="w-full h-10 px-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 tabular-nums focus:outline-none focus:ring-1 focus:ring-emerald-700 dark:focus:ring-emerald-500 placeholder-slate-400 dark:placeholder-slate-500"
                 />
               </div>
 
@@ -1592,7 +1595,7 @@ export const Setup: React.FC = () => {
                   max="10"
                   value={noBallRuns}
                   onChange={(e) => setNoBallRuns(parseInt(e.target.value, 10) || 0)}
-                  className="w-full h-10 px-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 tabular-nums"
+                  className="w-full h-10 px-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 tabular-nums focus:outline-none focus:ring-1 focus:ring-emerald-700 dark:focus:ring-emerald-500 placeholder-slate-400 dark:placeholder-slate-500"
                 />
               </div>
             </div>
