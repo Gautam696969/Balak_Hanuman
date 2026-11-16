@@ -39,33 +39,37 @@ export const ScoreHeader: React.FC<ScoreHeaderProps> = ({
 
   if (!match) return null;
 
-  const currentInnings = match.innings[match.currentInningsIndex];
+  const currentInnings = match.innings?.[match.currentInningsIndex];
+  if (!currentInnings) return null;
+
   const battingTeam = currentInnings.battingTeamId === 'teamA' ? match.teamA : match.teamB;
   const bowlingTeam = currentInnings.bowlingTeamId === 'teamA' ? match.teamA : match.teamB;
+  if (!battingTeam || !bowlingTeam) return null;
 
-  const striker = battingTeam.players.find((p) => p.id === currentInnings.strikerId);
-  const nonStriker = battingTeam.players.find((p) => p.id === currentInnings.nonStrikerId);
-  const bowler = bowlingTeam.players.find((p) => p.id === currentInnings.currentBowlerId);
+  const striker = battingTeam.players?.find((p) => p.id === currentInnings.strikerId);
+  const nonStriker = battingTeam.players?.find((p) => p.id === currentInnings.nonStrikerId);
+  const bowler = bowlingTeam.players?.find((p) => p.id === currentInnings.currentBowlerId);
 
   // Compute batsman live stats
-  const strikerBalls = currentInnings.allBalls.filter(
+  const allBalls = currentInnings.allBalls || [];
+  const strikerBalls = allBalls.filter(
     (b) => b.batsmanId === currentInnings.strikerId && b.extraType !== 'wd'
   );
-  const strikerRuns = strikerBalls.reduce((sum, b) => sum + b.runsOffBat, 0);
+  const strikerRuns = strikerBalls.reduce((sum, b) => sum + (b.runsOffBat || 0), 0);
   const strikerFours = strikerBalls.filter((b) => b.runsOffBat === 4).length;
   const strikerSixes = strikerBalls.filter((b) => b.runsOffBat === 6).length;
   const strikerSR = calculateStrikeRate(strikerRuns, strikerBalls.length);
 
-  const nonStrikerBalls = currentInnings.allBalls.filter(
+  const nonStrikerBalls = allBalls.filter(
     (b) => b.batsmanId === currentInnings.nonStrikerId && b.extraType !== 'wd'
   );
-  const nonStrikerRuns = nonStrikerBalls.reduce((sum, b) => sum + b.runsOffBat, 0);
+  const nonStrikerRuns = nonStrikerBalls.reduce((sum, b) => sum + (b.runsOffBat || 0), 0);
   const nonStrikerFours = nonStrikerBalls.filter((b) => b.runsOffBat === 4).length;
   const nonStrikerSixes = nonStrikerBalls.filter((b) => b.runsOffBat === 6).length;
   const nonStrikerSR = calculateStrikeRate(nonStrikerRuns, nonStrikerBalls.length);
 
   // Compute bowler live stats
-  const bowlerBalls = currentInnings.allBalls.filter((b) => b.bowlerId === currentInnings.currentBowlerId);
+  const bowlerBalls = allBalls.filter((b) => b.bowlerId === currentInnings.currentBowlerId);
   const bowlerLegalBalls = bowlerBalls.filter((b) => b.isLegal).length;
   const bowlerOvers = `${Math.floor(bowlerLegalBalls / 6)}.${bowlerLegalBalls % 6}`;
   const bowlerRunsConceded = bowlerBalls.reduce((sum, b) => {

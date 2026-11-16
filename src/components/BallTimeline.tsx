@@ -6,9 +6,10 @@ export const BallTimeline: React.FC = () => {
   const { match } = useMatch();
   if (!match) return null;
 
-  const currentInnings = match.innings[match.currentInningsIndex];
-  const currentOverBalls = currentInnings.currentOverBalls;
-  const legalBallCount = currentOverBalls.filter((b) => b.isLegal).length;
+  const currentInnings = match.innings?.[match.currentInningsIndex];
+  if (!currentInnings) return null;
+  const currentOverBalls = currentInnings.currentOverBalls || [];
+  const legalBallCount = currentOverBalls.filter((b) => b?.isLegal).length;
 
   const getChipStyle = (ball: Ball) => {
     if (ball.wicket) {

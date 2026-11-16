@@ -18,7 +18,7 @@ describe('Match Reducer Core Game Logic & Custom Rules', () => {
         id: `p_${i + 1}`,
         name: `Player ${i + 1}`,
         isCaptain: i === 0,
-        isKeeper: i === 1,
+        isViceCaptain: i === 1,
       })),
     };
 
@@ -30,7 +30,7 @@ describe('Match Reducer Core Game Logic & Custom Rules', () => {
         id: `b_${i + 1}`,
         name: `Bowler ${i + 1}`,
         isCaptain: i === 0,
-        isKeeper: i === 1,
+        isViceCaptain: i === 1,
       })),
     };
 

@@ -181,6 +181,7 @@ export const Live: React.FC = () => {
       {/* Next Batter Sheet (after wicket or retired hurt) */}
       <NextBatterSheet
         isOpen={showNewBatsmanModal}
+        onClose={() => dispatch({ type: 'CLOSE_BATSMAN_MODAL' })}
       />
 
       {/* 2. Over End -> Next Bowler Input (cannot be dismissed until bowler chosen) */}

@@ -548,7 +548,7 @@ export function matchReducer(state: ExtendedState, action: ExtendedAction): Exte
       if (!state.match || state.match.status !== 'live') return state;
 
       const currentMatch = state.match;
-      const historyStack = [...state.historyStack, JSON.parse(JSON.stringify(currentMatch))];
+      const historyStack = [...(state.historyStack || []), JSON.parse(JSON.stringify(currentMatch))];
 
       const innIndex = currentMatch.currentInningsIndex;
       const inn = { ...currentMatch.innings[innIndex] };
@@ -568,7 +568,7 @@ export function matchReducer(state: ExtendedState, action: ExtendedAction): Exte
       if (!resolvedNextBatsmanId && nextBatsmanName && nextBatsmanName.trim()) {
         const cleanName = nextBatsmanName.trim();
         const existing = battingTeam.players.find(
-          (p) => p.name.toLowerCase() === cleanName.toLowerCase()
+          (p) => (p.name || '').toLowerCase() === cleanName.toLowerCase()
         );
         if (existing) {
           resolvedNextBatsmanId = existing.id;
@@ -616,7 +616,7 @@ export function matchReducer(state: ExtendedState, action: ExtendedAction): Exte
       dismissal.description = formatDismissalText(dismissal);
 
       inn.fallOfWickets = [
-        ...inn.fallOfWickets,
+        ...(inn.fallOfWickets || []),
         {
           wicketNumber: inn.wickets,
           score: inn.totalRuns,
@@ -629,7 +629,7 @@ export function matchReducer(state: ExtendedState, action: ExtendedAction): Exte
       const newBall: Ball = {
         id: `ball_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
         overIndex: currentOverIndex,
-        ballInOver: inn.currentOverBalls.length + 1,
+        ballInOver: (inn.currentOverBalls || []).length + 1,
         legalBallNumber,
         isLegal: true,
         runsOffBat: 0,
@@ -649,8 +649,8 @@ export function matchReducer(state: ExtendedState, action: ExtendedAction): Exte
       };
       newBall.displayLabel = formatBallBadge(newBall);
 
-      inn.currentOverBalls = [...inn.currentOverBalls, newBall];
-      inn.allBalls = [...inn.allBalls, newBall];
+      inn.currentOverBalls = [...(inn.currentOverBalls || []), newBall];
+      inn.allBalls = [...(inn.allBalls || []), newBall];
 
       let newStrikerId = inn.strikerId;
       let newNonStrikerId = inn.nonStrikerId;
@@ -683,7 +683,7 @@ export function matchReducer(state: ExtendedState, action: ExtendedAction): Exte
             ...state,
             match: updatedMatch,
             historyStack,
-            savedMatches: [summary, ...state.savedMatches.filter((m) => m.id !== updatedMatch.id)],
+            savedMatches: [summary, ...(state.savedMatches || []).filter((m) => m.id !== updatedMatch.id)],
             showNewBowlerModal: false,
             showNewBatsmanModal: false,
           };
@@ -734,7 +734,7 @@ export function matchReducer(state: ExtendedState, action: ExtendedAction): Exte
             ...state,
             match: updatedMatch,
             historyStack,
-            savedMatches: [summary, ...state.savedMatches.filter((m) => m.id !== updatedMatch.id)],
+            savedMatches: [summary, ...(state.savedMatches || []).filter((m) => m.id !== updatedMatch.id)],
             showNewBowlerModal: false,
             showNewBatsmanModal: false,
           };
@@ -790,7 +790,7 @@ export function matchReducer(state: ExtendedState, action: ExtendedAction): Exte
               ...state,
               match: updatedMatch,
               historyStack,
-              savedMatches: [summary, ...state.savedMatches.filter((m) => m.id !== updatedMatch.id)],
+              savedMatches: [summary, ...(state.savedMatches || []).filter((m) => m.id !== updatedMatch.id)],
               showNewBowlerModal: false,
               showNewBatsmanModal: false,
             };

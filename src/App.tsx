@@ -7,6 +7,7 @@ import { History } from './pages/History';
 import { Result } from './pages/Result';
 import { BottomNav } from './components/BottomNav';
 import { AppHeader } from './components/AppHeader';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export const AppContent: React.FC = () => {
   const { match, activeTab } = useMatch();
@@ -35,7 +36,9 @@ export const AppContent: React.FC = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col">
       <AppHeader />
       <div className="flex-1">
-        {renderPage()}
+        <ErrorBoundary>
+          {renderPage()}
+        </ErrorBoundary>
       </div>
       <BottomNav />
     </div>
@@ -43,5 +46,9 @@ export const AppContent: React.FC = () => {
 };
 
 export default function App() {
-  return <AppContent />;
+  return (
+    <ErrorBoundary>
+      <AppContent />
+    </ErrorBoundary>
+  );
 }

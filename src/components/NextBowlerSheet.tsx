@@ -172,7 +172,7 @@ export const NextBowlerSheet: React.FC<NextBowlerSheetProps> = ({
                   <div>
                     <span className="font-medium text-slate-900 dark:text-slate-100">{player.name}</span>
                     {player.isCaptain && <span className="text-[10px] text-slate-400 ml-1">(C)</span>}
-                    {player.isKeeper && <span className="text-[10px] text-slate-400 ml-1">(WK)</span>}
+                    {player.isViceCaptain && <span className="text-[10px] text-slate-400 ml-1">(VC)</span>}
                   </div>
 
                   <div className="flex items-center gap-3">

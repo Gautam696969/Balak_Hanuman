@@ -13,6 +13,7 @@ export interface Player {
   id: string;
   name: string;
   isCaptain?: boolean;
+  isViceCaptain?: boolean;
   isKeeper?: boolean;
 }
 

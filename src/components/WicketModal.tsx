@@ -23,18 +23,22 @@ export const WicketModal: React.FC<WicketModalProps> = ({ isOpen, onClose }) => 
 
   if (!isOpen || !match) return null;
 
-  const currentInnings = match.innings[match.currentInningsIndex];
+  const currentInnings = match.innings?.[match.currentInningsIndex];
+  if (!currentInnings) return null;
+
   const battingTeam = currentInnings.battingTeamId === 'teamA' ? match.teamA : match.teamB;
   const bowlingTeam = currentInnings.bowlingTeamId === 'teamA' ? match.teamA : match.teamB;
+  if (!battingTeam || !bowlingTeam) return null;
 
-  const striker = battingTeam.players.find((p) => p.id === currentInnings.strikerId);
-  const nonStriker = battingTeam.players.find((p) => p.id === currentInnings.nonStrikerId);
-  const outBatsman = outBatsmanRole === 'striker' ? striker : nonStriker;
+  const striker = battingTeam.players?.find((p) => p.id === currentInnings.strikerId);
+  const nonStriker = battingTeam.players?.find((p) => p.id === currentInnings.nonStrikerId);
+  const outBatsman = outBatsmanRole === 'striker' ? (striker || nonStriker) : (nonStriker || striker);
 
   // Determine if this wicket causes All Out
-  const isAllOut = match.rules.lastManStands
-    ? currentInnings.wickets + 1 >= battingTeam.players.length
-    : currentInnings.wickets + 1 >= Math.max(1, battingTeam.players.length - 1);
+  const totalPlayers = battingTeam.players?.length || 0;
+  const isAllOut = match.rules?.lastManStands
+    ? (currentInnings.wickets || 0) + 1 >= totalPlayers
+    : (currentInnings.wickets || 0) + 1 >= Math.max(1, totalPlayers - 1);
   const availableBatsmen = getAvailableBatsmen(battingTeam, currentInnings);
 
   const wicketOptions: { type: WicketType; label: string; needsFielder?: boolean }[] = [
@@ -257,7 +261,7 @@ export const WicketModal: React.FC<WicketModalProps> = ({ isOpen, onClose }) => 
                 {availableBatsmen.map((p) => {
                   const isSelected =
                     nextBatsmanId === p.id ||
-                    nextBatterName.toLowerCase() === p.name.toLowerCase();
+                    (nextBatterName || '').trim().toLowerCase() === (p.name || '').toLowerCase();
                   return (
                     <button
                       key={p.id}
