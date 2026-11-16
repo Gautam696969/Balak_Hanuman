@@ -96,7 +96,7 @@ export const Live: React.FC = () => {
   const isPadDisabled = showNewBowlerModal || showNewBatsmanModal;
 
   return (
-    <div className="max-w-md mx-auto min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 pb-20">
+    <div className="max-w-md mx-auto flex-1 flex flex-col bg-slate-50 dark:bg-slate-950 pb-24">
       {/* 1. Header Bar + 2. Score Card + 3. Batting Spreadsheet Table + 4. Bowler Row */}
       <ScoreHeader
         onOpenInMatchMenu={() => setShowInMatchMenu(true)}
