@@ -106,7 +106,7 @@ export const PlayerSelectModal: React.FC<PlayerSelectModalProps> = ({
                   }}
                   className={`flex items-center justify-between px-3 py-2.5 text-xs transition-colors ${
                     isDisabled
-                      ? 'opacity-40 bg-slate-50 dark:bg-slate-850 cursor-not-allowed'
+                      ? 'opacity-40 bg-slate-50 dark:bg-slate-800 cursor-not-allowed'
                       : isSelected
                       ? 'bg-slate-50 dark:bg-slate-800/60 font-semibold text-slate-900 dark:text-slate-100 cursor-pointer'
                       : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50/50 cursor-pointer'

@@ -5,6 +5,7 @@ import { Team, MatchRules, TossDetails } from '../types/cricket';
 import { generateId } from '../utils/cricket';
 import { matchReducer, ExtendedState, MatchContext } from '../context/MatchContext';
 import { Setup } from '../pages/Setup';
+import { Scorecard } from '../components/Scorecard';
 
 describe('Default Group Teams flow', () => {
   const DEFAULT_VIKAS_PLAYERS = ['Rohit', 'Amit', 'Mohit', 'Bottle'];
@@ -157,5 +158,84 @@ describe('Default Group Teams flow', () => {
 
     expect(html).toContain('Default Group Team');
     expect(html).toContain('Team Vikas v Team Vipul');
+  });
+
+  it('renders Scorecard with correct dark theme classes on Batter, Bowler headers and Extras', () => {
+    const groupA = createInitialGroupTeamA();
+    const groupB = createInitialGroupTeamB();
+
+    const teamA: Team = {
+      id: 'teamA',
+      name: groupA.name,
+      shortName: groupA.shortName,
+      players: groupA.players,
+    };
+
+    const teamB: Team = {
+      id: 'teamB',
+      name: groupB.name,
+      shortName: groupB.shortName,
+      players: groupB.players,
+    };
+
+    const rules: MatchRules = {
+      totalOvers: 5,
+      wideRuns: 1,
+      noBallRuns: 1,
+      rebowlWide: false,
+      rebowlNoBall: false,
+      freeHitOnNoBall: false,
+      lastManStands: false,
+    };
+
+    const toss: TossDetails = {
+      winner: 'teamA',
+      decision: 'bat',
+    };
+
+    const initialState: ExtendedState = {
+      match: null,
+      historyStack: [],
+      activeTab: 'scoring',
+      selectedScorecardInnings: 1,
+      showNewBowlerModal: false,
+      showNewBatsmanModal: false,
+      replacingBatsmanRole: 'striker',
+      savedMatches: [],
+      darkMode: true,
+    };
+
+    const stateWithMatch = matchReducer(initialState, {
+      type: 'START_MATCH',
+      payload: {
+        teamA,
+        teamB,
+        rules,
+        toss,
+        strikerId: groupA.players[0].id,
+        nonStrikerId: groupA.players[1].id,
+        bowlerId: groupB.players[0].id,
+      },
+    });
+
+    const html = ReactDOMServer.renderToString(
+      React.createElement(
+        MatchContext.Provider,
+        { value: { ...stateWithMatch, dispatch: () => {} } },
+        React.createElement(Scorecard)
+      )
+    );
+
+    // Verify Batting header has dark theme background and text
+    expect(html).toContain('Batter');
+    expect(html).toContain('dark:bg-slate-800/80');
+    expect(html).toContain('dark:text-slate-400');
+
+    // Verify Bowler header has dark theme background and text
+    expect(html).toContain('Bowler');
+
+    // Verify Extras row has dark theme subtle background
+    expect(html).toContain('Extras');
+    expect(html).toContain('dark:bg-slate-800/40');
   });
 });

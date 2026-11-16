@@ -58,7 +58,7 @@ export const History: React.FC = () => {
             <div
               key={item.id}
               onClick={() => setSelectedMatch(item)}
-              className="p-3.5 hover:bg-slate-50/70 dark:hover:bg-slate-850 transition-colors cursor-pointer flex items-center justify-between"
+              className="p-3.5 hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors cursor-pointer flex items-center justify-between"
             >
               <div className="pr-3">
                 <div className="flex items-baseline gap-2">

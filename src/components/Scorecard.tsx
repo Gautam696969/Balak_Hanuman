@@ -71,7 +71,7 @@ export const Scorecard: React.FC = () => {
 
       {/* Batting Table */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden shadow-sm">
-        <div className="px-3 py-2 bg-slate-50 dark:bg-slate-850 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] uppercase tracking-wider text-slate-500 font-medium">
+        <div className="px-3 py-2 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
           <span>Batter</span>
           <div className="flex items-center gap-3 font-mono text-right">
             <span className="w-6">R</span>
@@ -93,7 +93,7 @@ export const Scorecard: React.FC = () => {
                 <div className="truncate pr-2 flex-1">
                   <div className="font-medium text-slate-900 dark:text-slate-100 truncate">
                     {batsman.name}
-                    {batsman.isNotOut && <span className="text-emerald-700 font-semibold ml-1">*</span>}
+                    {batsman.isNotOut && <span className="text-emerald-700 dark:text-emerald-400 font-semibold ml-1">*</span>}
                   </div>
                   <div className="text-[10px] text-slate-400 truncate">
                     {formatDismissalText(batsman.dismissal)}
@@ -113,7 +113,7 @@ export const Scorecard: React.FC = () => {
         </div>
 
         {/* Extras Breakdown */}
-        <div className="px-3 py-2 bg-slate-50/60 dark:bg-slate-850/60 border-t border-slate-200 dark:border-slate-800 text-xs flex items-center justify-between text-slate-600 dark:text-slate-400">
+        <div className="px-3 py-2 bg-slate-50/50 dark:bg-slate-800/40 border-t border-slate-200 dark:border-slate-800 text-xs flex items-center justify-between text-slate-600 dark:text-slate-400">
           <span>
             Extras: (wd {innings.extras.wides}, nb {innings.extras.noBalls}, b {innings.extras.byes}, lb {innings.extras.legByes})
           </span>
@@ -123,7 +123,7 @@ export const Scorecard: React.FC = () => {
         </div>
 
         {/* Total Summary Row */}
-        <div className="px-3 py-2.5 bg-slate-100/60 dark:bg-slate-800/40 border-t border-slate-200 dark:border-slate-800 text-xs font-semibold flex items-center justify-between">
+        <div className="px-3 py-2.5 bg-slate-100/60 dark:bg-slate-800/60 border-t border-slate-200 dark:border-slate-800 text-xs font-semibold flex items-center justify-between">
           <span className="uppercase tracking-wider text-slate-600 dark:text-slate-300 text-[11px]">Total</span>
           <span className="font-semibold tabular-nums text-slate-900 dark:text-slate-100">
             {innings.totalRuns}/{innings.wickets} ({innings.oversFormatted} ov)
@@ -134,14 +134,14 @@ export const Scorecard: React.FC = () => {
       {/* Fall of Wickets */}
       {innings.fallOfWickets.length > 0 && (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-3 shadow-sm">
-          <div className="text-[11px] uppercase tracking-wider text-slate-500 font-medium mb-1.5">
+          <div className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-medium mb-1.5">
             Fall of Wickets
           </div>
           <div className="flex flex-wrap gap-1.5 text-xs">
             {innings.fallOfWickets.map((fow) => (
               <span
                 key={fow.wicketNumber}
-                className="px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-mono text-[11px] tabular-nums"
+                className="px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 font-mono text-[11px] tabular-nums"
               >
                 {fow.wicketNumber}-{fow.score} <span className="text-slate-400 font-sans text-[10px]">({fow.batsmanName}, {fow.overs} ov)</span>
               </span>
@@ -152,7 +152,7 @@ export const Scorecard: React.FC = () => {
 
       {/* Bowling Table */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden shadow-sm">
-        <div className="px-3 py-2 bg-slate-50 dark:bg-slate-850 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] uppercase tracking-wider text-slate-500 font-medium">
+        <div className="px-3 py-2 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
           <span>Bowler</span>
           <div className="flex items-center gap-3 font-mono text-right">
             <span className="w-7">O</span>

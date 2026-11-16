@@ -10,6 +10,7 @@ export default {
       colors: {
         slate: {
           50: '#fffcf7', // Warm ivory cream background matching the Balak Hanuman logo
+          850: '#172033', // Deep slate for subtle card header elevation in dark mode
         },
         cricket: {
           50: '#fff7ed',  // Warm orange-50

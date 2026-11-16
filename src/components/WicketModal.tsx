@@ -120,7 +120,7 @@ export const WicketModal: React.FC<WicketModalProps> = ({ isOpen, onClose }) => 
                   }}
                   className={`flex items-center justify-between px-3 py-2 text-xs cursor-pointer transition-colors ${
                     isDisabled
-                      ? 'opacity-30 cursor-not-allowed bg-slate-50 dark:bg-slate-850'
+                      ? 'opacity-30 cursor-not-allowed bg-slate-50 dark:bg-slate-800'
                       : isSelected
                       ? 'bg-slate-50 dark:bg-slate-800/60 font-semibold text-slate-900 dark:text-slate-100'
                       : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50/50'

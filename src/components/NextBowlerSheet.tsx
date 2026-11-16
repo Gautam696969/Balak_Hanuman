@@ -165,7 +165,7 @@ export const NextBowlerSheet: React.FC<NextBowlerSheetProps> = ({
                   onClick={() => handleSelectExistingBowler(player.id)}
                   className={`w-full px-3 py-2.5 text-xs text-left transition-colors flex items-center justify-between ${
                     isDisabled
-                      ? 'opacity-40 bg-slate-50 dark:bg-slate-850 cursor-not-allowed'
+                      ? 'opacity-40 bg-slate-50 dark:bg-slate-800 cursor-not-allowed'
                       : 'hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 text-slate-800 dark:text-slate-200'
                   }`}
                 >
