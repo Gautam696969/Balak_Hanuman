@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { Undo2 } from 'lucide-react';
 import { WicketType } from '../types/cricket';
 import { useMatch } from '../context/MatchContext';
 import { useHaptic } from '../hooks/useHaptic';
@@ -77,19 +77,27 @@ export const WicketModal: React.FC<WicketModalProps> = ({ isOpen, onClose }) => 
         <div className="w-8 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-3" />
 
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-          <div>
-            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 gap-2">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100 truncate">
               Wicket #{currentInnings.wickets + 1}
             </h2>
-            <p className="text-xs text-slate-500">Record dismissal details</p>
+            <p className="text-xs text-slate-500 truncate">Record dismissal details</p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded"
-          >
-            <X size={18} strokeWidth={1.75} />
-          </button>
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                tap();
+                onClose();
+              }}
+              className="h-8 px-2.5 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 hover:border-amber-400 dark:hover:border-amber-500 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs active:scale-95"
+              title="Undo / Close"
+            >
+              <Undo2 size={14} strokeWidth={2} />
+              <span>Undo</span>
+            </button>
+          </div>
         </div>
 
         {/* Free hit alert notice if active */}

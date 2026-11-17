@@ -1,11 +1,11 @@
 import React from 'react';
-import { RotateCcw, Share2 } from 'lucide-react';
+import { RotateCcw, Share2, Undo2 } from 'lucide-react';
 import { useMatch } from '../context/MatchContext';
 import { useHaptic } from '../hooks/useHaptic';
 import { Scorecard } from '../components/Scorecard';
 
 export const Result: React.FC = () => {
-  const { match, dispatch } = useMatch();
+  const { match, historyStack, dispatch } = useMatch();
   const { tap } = useHaptic();
 
   if (!match) return null;
@@ -70,6 +70,20 @@ export const Result: React.FC = () => {
 
         {/* Actions */}
         <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+          {(historyStack || []).length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                tap();
+                dispatch({ type: 'UNDO' });
+              }}
+              className="h-10 px-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors shadow-xs active:scale-95"
+              title="Undo last delivery"
+            >
+              <Undo2 size={15} strokeWidth={1.75} />
+              <span>Undo</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={handleShare}

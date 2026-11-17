@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Undo2 } from 'lucide-react';
 import { useMatch } from '../context/MatchContext';
 import { useHaptic } from '../hooks/useHaptic';
 import { Match, Player } from '../types/cricket';
@@ -9,7 +10,7 @@ interface InningsBreakModalContentProps {
 }
 
 const InningsBreakModalContent: React.FC<InningsBreakModalContentProps> = ({ match }) => {
-  const { dispatch } = useMatch();
+  const { historyStack, dispatch } = useMatch();
   const { boundary, tap } = useHaptic();
 
   const [inn1] = match.innings;
@@ -94,12 +95,30 @@ const InningsBreakModalContent: React.FC<InningsBreakModalContentProps> = ({ mat
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 backdrop-blur-[2px]">
       <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-lg p-5 border border-slate-200 dark:border-slate-800 shadow-md animate-fadeIn">
-        <div className="text-xs uppercase tracking-wide text-amber-600 dark:text-amber-400 font-semibold">
-          Innings Complete
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <div className="text-xs uppercase tracking-wide text-amber-600 dark:text-amber-400 font-semibold">
+              Innings Complete
+            </div>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mt-0.5">
+              1st Innings Summary
+            </h2>
+          </div>
+          {(historyStack || []).length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                tap();
+                dispatch({ type: 'UNDO' });
+              }}
+              className="h-8 px-2.5 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 hover:border-amber-400 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs active:scale-95"
+              title="Undo last delivery"
+            >
+              <Undo2 size={14} strokeWidth={2} />
+              <span>Undo</span>
+            </button>
+          )}
         </div>
-        <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mt-0.5">
-          1st Innings Summary
-        </h2>
 
         {/* 1st Innings Summary Box */}
         <div className="mt-3 p-3 rounded-md bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/70 dark:border-amber-800/60">

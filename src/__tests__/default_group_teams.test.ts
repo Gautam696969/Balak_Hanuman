@@ -6,6 +6,8 @@ import { generateId } from '../utils/cricket';
 import { matchReducer, ExtendedState, MatchContext } from '../context/MatchContext';
 import { Setup } from '../pages/Setup';
 import { Scorecard } from '../components/Scorecard';
+import { NextBowlerSheet } from '../components/NextBowlerSheet';
+import { NextBatterSheet } from '../components/NextBatterSheet';
 
 describe('Default Group Teams flow', () => {
   const DEFAULT_VIKAS_PLAYERS = ['Rohit', 'Amit', 'Mohit', 'Bottle'];
@@ -237,5 +239,236 @@ describe('Default Group Teams flow', () => {
     // Verify Extras row has dark theme subtle background
     expect(html).toContain('Extras');
     expect(html).toContain('dark:bg-slate-800/40');
+  });
+
+  it('renders NextBowlerSheet with Undo option when historyStack has deliveries', () => {
+    const groupA = createInitialGroupTeamA();
+    const groupB = createInitialGroupTeamB();
+
+    const teamA: Team = {
+      id: 'teamA',
+      name: groupA.name,
+      shortName: groupA.shortName,
+      players: groupA.players,
+    };
+
+    const teamB: Team = {
+      id: 'teamB',
+      name: groupB.name,
+      shortName: groupB.shortName,
+      players: groupB.players,
+    };
+
+    const rules: MatchRules = {
+      totalOvers: 5,
+      wideRuns: 1,
+      noBallRuns: 1,
+      rebowlWide: false,
+      rebowlNoBall: false,
+      freeHitOnNoBall: false,
+      lastManStands: false,
+    };
+
+    const toss: TossDetails = {
+      winner: 'teamA',
+      decision: 'bat',
+    };
+
+    const initialState: ExtendedState = {
+      match: null,
+      historyStack: [],
+      activeTab: 'scoring',
+      selectedScorecardInnings: 1,
+      showNewBowlerModal: true,
+      showNewBatsmanModal: false,
+      replacingBatsmanRole: 'striker',
+      savedMatches: [],
+      darkMode: true,
+    };
+
+    const stateWithMatch = matchReducer(initialState, {
+      type: 'START_MATCH',
+      payload: {
+        teamA,
+        teamB,
+        rules,
+        toss,
+        strikerId: groupA.players[0].id,
+        nonStrikerId: groupA.players[1].id,
+        bowlerId: groupB.players[0].id,
+      },
+    });
+
+    // Simulate 1 delivery recorded so historyStack is not empty
+    const stateWithBall = matchReducer(stateWithMatch, {
+      type: 'ADD_RUNS',
+      payload: { runs: 1 },
+    });
+
+    const html = ReactDOMServer.renderToString(
+      React.createElement(
+        MatchContext.Provider,
+        { value: { ...stateWithBall, showNewBowlerModal: true, dispatch: () => {} } },
+        React.createElement(NextBowlerSheet, { isOpen: true })
+      )
+    );
+
+    expect(html).toContain('Undo');
+    expect(html).toContain('Select Next Bowler');
+  });
+
+  it('renders NextBatterSheet with Undo option when historyStack has deliveries', () => {
+    const groupA = createInitialGroupTeamA();
+    const groupB = createInitialGroupTeamB();
+
+    const teamA: Team = {
+      id: 'teamA',
+      name: groupA.name,
+      shortName: groupA.shortName,
+      players: groupA.players,
+    };
+
+    const teamB: Team = {
+      id: 'teamB',
+      name: groupB.name,
+      shortName: groupB.shortName,
+      players: groupB.players,
+    };
+
+    const rules: MatchRules = {
+      totalOvers: 5,
+      wideRuns: 1,
+      noBallRuns: 1,
+      rebowlWide: false,
+      rebowlNoBall: false,
+      freeHitOnNoBall: false,
+      lastManStands: false,
+    };
+
+    const toss: TossDetails = {
+      winner: 'teamA',
+      decision: 'bat',
+    };
+
+    const initialState: ExtendedState = {
+      match: null,
+      historyStack: [],
+      activeTab: 'scoring',
+      selectedScorecardInnings: 1,
+      showNewBowlerModal: false,
+      showNewBatsmanModal: true,
+      replacingBatsmanRole: 'striker',
+      savedMatches: [],
+      darkMode: true,
+    };
+
+    const stateWithMatch = matchReducer(initialState, {
+      type: 'START_MATCH',
+      payload: {
+        teamA,
+        teamB,
+        rules,
+        toss,
+        strikerId: groupA.players[0].id,
+        nonStrikerId: groupA.players[1].id,
+        bowlerId: groupB.players[0].id,
+      },
+    });
+
+    // Simulate wicket delivery
+    const stateWithWicket = matchReducer(stateWithMatch, {
+      type: 'ADD_WICKET',
+      payload: {
+        wicketType: 'bowled',
+        outBatsmanId: groupA.players[0].id,
+      },
+    });
+
+    const html = ReactDOMServer.renderToString(
+      React.createElement(
+        MatchContext.Provider,
+        { value: { ...stateWithWicket, showNewBatsmanModal: true, dispatch: () => {} } },
+        React.createElement(NextBatterSheet, { isOpen: true })
+      )
+    );
+
+    expect(html).toContain('Undo');
+    expect(html).toContain('New Batter');
+  });
+
+  it('filters bowler list and allows selecting player into search input in NextBowlerSheet', () => {
+    const groupA = createInitialGroupTeamA();
+    const groupB = createInitialGroupTeamB();
+
+    const teamA: Team = {
+      id: 'teamA',
+      name: groupA.name,
+      shortName: groupA.shortName,
+      players: groupA.players,
+    };
+
+    const teamB: Team = {
+      id: 'teamB',
+      name: groupB.name,
+      shortName: groupB.shortName,
+      players: groupB.players,
+    };
+
+    const rules: MatchRules = {
+      totalOvers: 5,
+      wideRuns: 1,
+      noBallRuns: 1,
+      rebowlWide: false,
+      rebowlNoBall: false,
+      freeHitOnNoBall: false,
+      maxOversPerBowler: 2,
+      lastManStands: false,
+    };
+
+    const toss: TossDetails = {
+      winner: 'teamA',
+      decision: 'bat',
+    };
+
+    const initialState: ExtendedState = {
+      match: null,
+      historyStack: [],
+      activeTab: 'scoring',
+      selectedScorecardInnings: 1,
+      showNewBowlerModal: true,
+      showNewBatsmanModal: false,
+      replacingBatsmanRole: 'striker',
+      savedMatches: [],
+      darkMode: true,
+    };
+
+    const stateWithMatch = matchReducer(initialState, {
+      type: 'START_MATCH',
+      payload: {
+        teamA,
+        teamB,
+        rules,
+        toss,
+        strikerId: groupA.players[0].id,
+        nonStrikerId: groupA.players[1].id,
+        bowlerId: groupB.players[0].id,
+      },
+    });
+
+    const html = ReactDOMServer.renderToString(
+      React.createElement(
+        MatchContext.Provider,
+        { value: { ...stateWithMatch, showNewBowlerModal: true, dispatch: () => {} } },
+        React.createElement(NextBowlerSheet, { isOpen: true })
+      )
+    );
+
+    // Initial render shows bowling team players (Team Vipul players: Sashi, JD, Bhavesh, Aman)
+    expect(html).toContain('Sashi');
+    expect(html).toContain('JD');
+    expect(html).toContain('Bhavesh');
+    expect(html).toContain('Aman');
+    expect(html).toContain('Enter bowler name...');
+    expect(html).toContain('Set Bowler');
   });
 });
