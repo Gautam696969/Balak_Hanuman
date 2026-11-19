@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getDatabase, ref, set, onValue, get, Database, Unsubscribe } from 'firebase/database';
 import { Match } from '../types/cricket';
+import { normalizeMatch } from '../utils/cricket';
 
 export interface FirebaseConfig {
   apiKey: string;
@@ -138,7 +139,7 @@ export function subscribeToLiveMatch(
     (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        onUpdate(data as Match);
+        onUpdate(normalizeMatch(data));
       }
     },
     (error) => {
@@ -163,7 +164,7 @@ export async function fetchLiveMatchOnce(matchId: string): Promise<Match | null>
     const matchRef = ref(db, `matches/${matchId}`);
     const snapshot = await get(matchRef);
     if (snapshot.exists()) {
-      return snapshot.val() as Match;
+      return normalizeMatch(snapshot.val());
     }
     return null;
   } catch (err) {

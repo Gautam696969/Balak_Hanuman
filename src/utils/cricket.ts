@@ -141,16 +141,54 @@ export function formatBallBadge(ball: Ball): string {
 }
 
 /**
+ * Normalizes match data coming from network/Firebase
+ * Ensures all arrays are valid arrays even if Firebase converted empty arrays to undefined
+ */
+export function normalizeMatch(data: any): Match {
+  if (!data) return data;
+  const rawInnings = Array.isArray(data.innings) ? data.innings : Object.values(data.innings || {});
+  return {
+    ...data,
+    teamA: {
+      ...data.teamA,
+      players: Array.isArray(data.teamA?.players)
+        ? data.teamA.players
+        : Object.values(data.teamA?.players || {}),
+    },
+    teamB: {
+      ...data.teamB,
+      players: Array.isArray(data.teamB?.players)
+        ? data.teamB.players
+        : Object.values(data.teamB?.players || {}),
+    },
+    innings: rawInnings.map((inn: any) => ({
+      ...inn,
+      allBalls: Array.isArray(inn?.allBalls)
+        ? inn.allBalls
+        : Object.values(inn?.allBalls || {}),
+      currentOverBalls: Array.isArray(inn?.currentOverBalls)
+        ? inn.currentOverBalls
+        : Object.values(inn?.currentOverBalls || {}),
+      fallOfWickets: Array.isArray(inn?.fallOfWickets)
+        ? inn.fallOfWickets
+        : Object.values(inn?.fallOfWickets || {}),
+      extras: inn?.extras || { wides: 0, noBalls: 0, byes: 0, legByes: 0, total: 0 },
+    })) as [Innings, Innings],
+  };
+}
+
+/**
  * Computes individual batsman statistics for an innings
  */
 export function getBatsmanStats(innings: Innings, battingTeam: Team): BatsmanStats[] {
   const statsMap = new Map<string, BatsmanStats>();
+  const allBalls = Array.isArray(innings?.allBalls) ? innings.allBalls : Object.values(innings?.allBalls || {});
 
   const battedPlayerIds = new Set<string>();
-  if (innings.strikerId) battedPlayerIds.add(innings.strikerId);
-  if (innings.nonStrikerId) battedPlayerIds.add(innings.nonStrikerId);
+  if (innings?.strikerId) battedPlayerIds.add(innings.strikerId);
+  if (innings?.nonStrikerId) battedPlayerIds.add(innings.nonStrikerId);
 
-  for (const b of innings.allBalls) {
+  for (const b of allBalls) {
     battedPlayerIds.add(b.batsmanId);
     battedPlayerIds.add(b.nonStrikerId);
     if (b.wicket) {
@@ -158,7 +196,7 @@ export function getBatsmanStats(innings: Innings, battingTeam: Team): BatsmanSta
     }
   }
 
-  for (const player of battingTeam.players) {
+  for (const player of battingTeam?.players || []) {
     if (battedPlayerIds.has(player.id)) {
       statsMap.set(player.id, {
         playerId: player.id,
@@ -173,7 +211,7 @@ export function getBatsmanStats(innings: Innings, battingTeam: Team): BatsmanSta
     }
   }
 
-  for (const ball of innings.allBalls) {
+  for (const ball of allBalls) {
     const stats = statsMap.get(ball.batsmanId);
     if (stats) {
       if (ball.extraType !== 'wd') {
@@ -209,15 +247,16 @@ export function getBatsmanStats(innings: Innings, battingTeam: Team): BatsmanSta
  */
 export function getBowlerStats(innings: Innings, bowlingTeam: Team): BowlerStats[] {
   const statsMap = new Map<string, BowlerStats>();
+  const allBalls = Array.isArray(innings?.allBalls) ? innings.allBalls : Object.values(innings?.allBalls || {});
 
   const bowledPlayerIds = new Set<string>();
-  if (innings.currentBowlerId) bowledPlayerIds.add(innings.currentBowlerId);
+  if (innings?.currentBowlerId) bowledPlayerIds.add(innings.currentBowlerId);
 
-  for (const b of innings.allBalls) {
+  for (const b of allBalls) {
     bowledPlayerIds.add(b.bowlerId);
   }
 
-  for (const player of bowlingTeam.players) {
+  for (const player of bowlingTeam?.players || []) {
     if (bowledPlayerIds.has(player.id)) {
       statsMap.set(player.id, {
         playerId: player.id,
@@ -236,7 +275,7 @@ export function getBowlerStats(innings: Innings, bowlingTeam: Team): BowlerStats
 
   const overRunsMap = new Map<string, { runs: number; legalBalls: number }>();
 
-  for (const ball of innings.allBalls) {
+  for (const ball of allBalls) {
     const stats = statsMap.get(ball.bowlerId);
     if (!stats) continue;
 
