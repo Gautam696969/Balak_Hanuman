@@ -182,7 +182,9 @@ export function normalizeMatch(data: any): Match {
  */
 export function getBatsmanStats(innings: Innings, battingTeam: Team): BatsmanStats[] {
   const statsMap = new Map<string, BatsmanStats>();
-  const allBalls = Array.isArray(innings?.allBalls) ? innings.allBalls : Object.values(innings?.allBalls || {});
+  const allBalls: Ball[] = Array.isArray(innings?.allBalls)
+    ? innings.allBalls
+    : (Object.values(innings?.allBalls || {}) as Ball[]);
 
   const battedPlayerIds = new Set<string>();
   if (innings?.strikerId) battedPlayerIds.add(innings.strikerId);
@@ -247,7 +249,9 @@ export function getBatsmanStats(innings: Innings, battingTeam: Team): BatsmanSta
  */
 export function getBowlerStats(innings: Innings, bowlingTeam: Team): BowlerStats[] {
   const statsMap = new Map<string, BowlerStats>();
-  const allBalls = Array.isArray(innings?.allBalls) ? innings.allBalls : Object.values(innings?.allBalls || {});
+  const allBalls: Ball[] = Array.isArray(innings?.allBalls)
+    ? innings.allBalls
+    : (Object.values(innings?.allBalls || {}) as Ball[]);
 
   const bowledPlayerIds = new Set<string>();
   if (innings?.currentBowlerId) bowledPlayerIds.add(innings.currentBowlerId);

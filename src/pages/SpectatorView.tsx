@@ -24,6 +24,7 @@ import {
   calculateRequiredRunRate,
   calculateStrikeRate,
   calculateEconomy,
+  normalizeMatch,
 } from '../utils/cricket';
 import { Scorecard } from '../components/Scorecard';
 
@@ -64,7 +65,7 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
     // Initial fetch once
     fetchLiveMatchOnce(matchId).then((data) => {
       if (data) {
-        setMatch(data);
+        setMatch(normalizeMatch(data));
         setLastUpdated(Date.now());
       }
       setLoading(false);
@@ -76,20 +77,20 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
     const unsubscribe = subscribeToLiveMatch(
       matchId,
       (updatedMatch) => {
-        setMatch(updatedMatch);
+        setMatch(normalizeMatch(updatedMatch));
         setLastUpdated(Date.now());
         setLoading(false);
         setError(null);
       },
       (err) => {
         console.warn('Subscription warning:', err);
-        // If not configured, check if match is in localStorage for local preview testing
+        // Check if match is in localStorage for local preview testing
         try {
-          const stored = localStorage.getItem('CURRENT_MATCH');
+          const stored = localStorage.getItem('cricket_current_match_v3') || localStorage.getItem('CURRENT_MATCH');
           if (stored) {
-            const parsed = JSON.parse(stored) as Match;
-            if (parsed.id === matchId) {
-              setMatch(parsed);
+            const parsed = JSON.parse(stored);
+            if (parsed && (parsed.id === matchId || !parsed.id)) {
+              setMatch(normalizeMatch(parsed));
               setLoading(false);
               return;
             }
@@ -140,6 +141,21 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
   const nonStriker = battingTeam?.players?.find((p) => p.id === currentInnings?.nonStrikerId);
   const currentBowler = bowlingTeam?.players?.find((p) => p.id === currentInnings?.currentBowlerId);
 
+  // Safe arrays for Firebase compatibility (empty arrays can become undefined or objects in RTDB)
+  const allBallsList: Ball[] = useMemo(() => {
+    if (!currentInnings?.allBalls) return [];
+    return Array.isArray(currentInnings.allBalls)
+      ? currentInnings.allBalls
+      : (Object.values(currentInnings.allBalls) as Ball[]);
+  }, [currentInnings?.allBalls]);
+
+  const currentOverBallsList: Ball[] = useMemo(() => {
+    if (!currentInnings?.currentOverBalls) return [];
+    return Array.isArray(currentInnings.currentOverBalls)
+      ? currentInnings.currentOverBalls
+      : (Object.values(currentInnings.currentOverBalls) as Ball[]);
+  }, [currentInnings?.currentOverBalls]);
+
   // Batter stats calculation
   const strikerStats = useMemo(() => {
     if (!currentInnings || !striker) return { runs: 0, balls: 0, fours: 0, sixes: 0, sr: 0 };
@@ -148,7 +164,7 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
     let fours = 0;
     let sixes = 0;
 
-    for (const b of currentInnings.allBalls) {
+    for (const b of allBallsList) {
       if (b.batsmanId === striker.id) {
         if (b.extraType !== 'wd') balls += 1;
         runs += b.runsOffBat;
@@ -163,7 +179,7 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
       sixes,
       sr: calculateStrikeRate(runs, balls),
     };
-  }, [currentInnings, striker]);
+  }, [currentInnings, striker, allBallsList]);
 
   const nonStrikerStats = useMemo(() => {
     if (!currentInnings || !nonStriker) return { runs: 0, balls: 0, fours: 0, sixes: 0, sr: 0 };
@@ -172,7 +188,7 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
     let fours = 0;
     let sixes = 0;
 
-    for (const b of currentInnings.allBalls) {
+    for (const b of allBallsList) {
       if (b.batsmanId === nonStriker.id) {
         if (b.extraType !== 'wd') balls += 1;
         runs += b.runsOffBat;
@@ -187,7 +203,7 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
       sixes,
       sr: calculateStrikeRate(runs, balls),
     };
-  }, [currentInnings, nonStriker]);
+  }, [currentInnings, nonStriker, allBallsList]);
 
   // Bowler stats calculation
   const bowlerStats = useMemo(() => {
@@ -196,7 +212,7 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
     let runsConceded = 0;
     let wickets = 0;
 
-    for (const b of currentInnings.allBalls) {
+    for (const b of allBallsList) {
       if (b.bowlerId === currentBowler.id) {
         if (b.isLegal) legalBalls += 1;
         if (b.extraType === 'wd') runsConceded += b.extraRuns;
@@ -217,7 +233,7 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
       wickets,
       econ: calculateEconomy(runsConceded, legalBalls),
     };
-  }, [currentInnings, currentBowler]);
+  }, [currentInnings, currentBowler, allBallsList]);
 
   // Target chase calculations
   const target =
@@ -518,18 +534,18 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 shadow-xs">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] uppercase font-bold text-slate-500 tracking-wider">
-              This Over (Over {(Math.floor(currentInnings.legalBalls / 6) + 1)})
+              This Over (Over {(Math.floor((currentInnings.legalBalls || 0) / 6) + 1)})
             </span>
             <span className="text-[11px] text-slate-400 font-mono">
-              {currentInnings.currentOverBalls.filter((b) => b.isLegal).length}/6 legal balls
+              {currentOverBallsList.filter((b) => b.isLegal).length}/6 legal balls
             </span>
           </div>
 
           <div className="flex items-center gap-1.5 overflow-x-auto py-1">
-            {currentInnings.currentOverBalls.length === 0 ? (
+            {currentOverBallsList.length === 0 ? (
               <span className="text-xs text-slate-400 italic">Over starting...</span>
             ) : (
-              currentInnings.currentOverBalls.map((b, idx) => {
+              currentOverBallsList.map((b, idx) => {
                 let badgeClass =
                   'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300';
                 if (b.wicket) {
@@ -602,13 +618,13 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
             <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
               Recent Balls
             </h3>
-            {currentInnings.allBalls.length === 0 ? (
+            {allBallsList.length === 0 ? (
               <p className="text-xs text-slate-400 italic text-center py-4">
                 No deliveries bowled in this innings yet.
               </p>
             ) : (
               <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-                {[...currentInnings.allBalls]
+                {[...allBallsList]
                   .reverse()
                   .slice(0, 15)
                   .map((ball: Ball) => (
