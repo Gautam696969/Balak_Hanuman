@@ -1569,6 +1569,22 @@ export const Setup: React.FC = () => {
                 <label className="text-slate-600 dark:text-slate-400 block mb-1 font-medium">
                   Wide Penalty Runs
                 </label>
+                <div className="flex gap-1.5 mb-1.5">
+                  {[0, 1, 2].map((val) => (
+                    <button
+                      type="button"
+                      key={val}
+                      onClick={() => setWideRuns(val)}
+                      className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                        wideRuns === val
+                          ? 'bg-emerald-700 text-white border-emerald-700 font-semibold'
+                          : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                      }`}
+                    >
+                      {val === 0 ? '0 (No run)' : `${val} Run`}
+                    </button>
+                  ))}
+                </div>
                 <input
                   type="number"
                   min="0"
@@ -1583,6 +1599,22 @@ export const Setup: React.FC = () => {
                 <label className="text-slate-600 dark:text-slate-400 block mb-1 font-medium">
                   No-Ball Penalty Runs
                 </label>
+                <div className="flex gap-1.5 mb-1.5">
+                  {[0, 1, 2].map((val) => (
+                    <button
+                      type="button"
+                      key={val}
+                      onClick={() => setNoBallRuns(val)}
+                      className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                        noBallRuns === val
+                          ? 'bg-emerald-700 text-white border-emerald-700 font-semibold'
+                          : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                      }`}
+                    >
+                      {val === 0 ? '0 (No run)' : `${val} Run`}
+                    </button>
+                  ))}
+                </div>
                 <input
                   type="number"
                   min="0"
@@ -1597,7 +1629,10 @@ export const Setup: React.FC = () => {
             {/* Rule Toggles */}
             <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2.5 text-xs">
               <label className="flex items-center justify-between cursor-pointer">
-                <span className="text-slate-700 dark:text-slate-300">Re-bowl on Wide</span>
+                <div>
+                  <span className="text-slate-700 dark:text-slate-300 block">Re-bowl on Wide (No ball count)</span>
+                  <span className="text-[10px] text-slate-400 block">Wide delivery is re-bowled and not counted in the over</span>
+                </div>
                 <input
                   type="checkbox"
                   checked={rebowlWide}
@@ -1607,7 +1642,10 @@ export const Setup: React.FC = () => {
               </label>
 
               <label className="flex items-center justify-between cursor-pointer">
-                <span className="text-slate-700 dark:text-slate-300">Re-bowl on No-Ball</span>
+                <div>
+                  <span className="text-slate-700 dark:text-slate-300 block">Re-bowl on No-Ball (Not balling count)</span>
+                  <span className="text-[10px] text-slate-400 block">No-ball delivery is re-bowled and not counted in the over</span>
+                </div>
                 <input
                   type="checkbox"
                   checked={rebowlNoBall}

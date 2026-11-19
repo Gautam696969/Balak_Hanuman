@@ -189,7 +189,7 @@ export type MatchAction =
       };
     }
   | { type: 'ADD_RUNS'; payload: { runs: number } }
-  | { type: 'ADD_EXTRA'; payload: { extraType: ExtraType; additionalRuns: number; runsOffBat?: number } }
+  | { type: 'ADD_EXTRA'; payload: { extraType: ExtraType; additionalRuns: number; runsOffBat?: number; isZeroRunExtra?: boolean } }
   | { type: 'ADD_WICKET'; payload: { wicketType: WicketType; outBatsmanId: string; fielderId?: string; runsCompleted?: number; nextBatsmanId?: string; nextBatsmanName?: string } }
   | { type: 'UNDO' }
   | { type: 'SET_BOWLER'; payload: { bowlerId: string } }

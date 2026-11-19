@@ -234,7 +234,7 @@ export const NextBowlerSheet: React.FC<NextBowlerSheetProps> = ({
                 .reduce((sum, b) => {
                   let r = b.runsOffBat;
                   if (b.extraType === 'wd') r += b.extraRuns;
-                  if (b.extraType === 'nb') r += 1;
+                  if (b.extraType === 'nb') r += b.extraRuns !== undefined ? b.extraRuns : (match.rules.noBallRuns ?? 1);
                   return sum + r;
                 }, 0);
 

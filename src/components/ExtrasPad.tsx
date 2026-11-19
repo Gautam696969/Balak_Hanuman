@@ -1,19 +1,41 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { ExtraType } from '../types/cricket';
+import { useMatch } from '../context/MatchContext';
 import { useHaptic } from '../hooks/useHaptic';
 
 interface ExtrasPadProps {
-  onScoreExtra: (extraType: ExtraType, additionalRuns: number, runsOffBat?: number) => void;
+  onScoreExtra: (
+    extraType: ExtraType,
+    additionalRuns: number,
+    runsOffBat?: number,
+    isZeroRunExtra?: boolean
+  ) => void;
 }
 
 export const ExtrasPad: React.FC<ExtrasPadProps> = ({ onScoreExtra }) => {
+  const { match } = useMatch();
   const { tap, boundary } = useHaptic();
   const [activeModal, setActiveModal] = useState<'wd' | 'nb' | 'b' | 'lb' | null>(null);
+
+  const widePenalty = match?.rules.wideRuns !== undefined ? match.rules.wideRuns : 1;
+  const noBallPenalty = match?.rules.noBallRuns !== undefined ? match.rules.noBallRuns : 1;
 
   const handleSimpleWide = (additionalRuns: number) => {
     tap();
     onScoreExtra('wd', additionalRuns);
+    setActiveModal(null);
+  };
+
+  const handleZeroRunWide = () => {
+    tap();
+    onScoreExtra('wd', 0, 0, true);
+    setActiveModal(null);
+  };
+
+  const handleZeroRunNoBall = () => {
+    tap();
+    onScoreExtra('nb', 0, 0, true);
     setActiveModal(null);
   };
 
@@ -98,7 +120,7 @@ export const ExtrasPad: React.FC<ExtrasPadProps> = ({ onScoreExtra }) => {
             <div className="w-8 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-3" />
             <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
               <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                Wide Ball (+1 Penalty)
+                Wide Ball Options {widePenalty > 0 ? `(+${widePenalty} Penalty)` : '(0 Penalty)'}
               </h3>
               <button
                 onClick={() => setActiveModal(null)}
@@ -108,23 +130,44 @@ export const ExtrasPad: React.FC<ExtrasPadProps> = ({ onScoreExtra }) => {
               </button>
             </div>
 
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              {[
-                { label: 'Wide Only', runs: 0, sub: '1 run total' },
-                { label: 'Wide + 1 Run', runs: 1, sub: '2 runs total' },
-                { label: 'Wide + 2 Runs', runs: 2, sub: '3 runs total' },
-                { label: 'Wide + 3 Runs', runs: 3, sub: '4 runs total' },
-                { label: 'Wide + 4 (Four)', runs: 4, sub: '5 runs total' },
-              ].map(({ label, runs, sub }) => (
-                <button
-                  key={runs}
-                  onClick={() => handleSimpleWide(runs)}
-                  className="h-11 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-left px-3 flex flex-col justify-center transition-colors active:bg-slate-100"
-                >
-                  <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">{label}</span>
-                  <span className="text-[10px] text-slate-400">{sub}</span>
-                </button>
-              ))}
+            <div className="mt-3 space-y-2">
+              {/* Option: Wide with No Run and No Ball Count */}
+              <button
+                type="button"
+                onClick={handleZeroRunWide}
+                className="w-full h-12 rounded-md border-2 border-amber-500 bg-amber-50/80 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 text-left px-3 flex items-center justify-between transition-colors shadow-xs active:scale-[0.99]"
+              >
+                <div>
+                  <span className="text-xs font-bold text-amber-900 dark:text-amber-200 block">
+                    Wide: 0 Run &amp; No Ball Count
+                  </span>
+                  <span className="text-[10px] text-amber-700/80 dark:text-amber-400/80 block">
+                    No run awarded &bull; Delivery not counted (Re-bowled)
+                  </span>
+                </div>
+                <span className="text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded">
+                  0 Run
+                </span>
+              </button>
+
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { label: 'Wide Only', runs: 0, sub: `${widePenalty} run total` },
+                  { label: 'Wide + 1 Run', runs: 1, sub: `${widePenalty + 1} runs total` },
+                  { label: 'Wide + 2 Runs', runs: 2, sub: `${widePenalty + 2} runs total` },
+                  { label: 'Wide + 3 Runs', runs: 3, sub: `${widePenalty + 3} runs total` },
+                  { label: 'Wide + 4 (Four)', runs: 4, sub: `${widePenalty + 4} runs total` },
+                ].map(({ label, runs, sub }) => (
+                  <button
+                    key={runs}
+                    onClick={() => handleSimpleWide(runs)}
+                    className="h-11 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-left px-3 flex flex-col justify-center transition-colors active:bg-slate-100"
+                  >
+                    <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">{label}</span>
+                    <span className="text-[10px] text-slate-400">{sub}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -137,7 +180,7 @@ export const ExtrasPad: React.FC<ExtrasPadProps> = ({ onScoreExtra }) => {
             <div className="w-8 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-3" />
             <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
               <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                No Ball (+1 Penalty + Free Hit)
+                No Ball Options {noBallPenalty > 0 ? `(+${noBallPenalty} Penalty)` : '(0 Penalty)'}
               </h3>
               <button
                 onClick={() => setActiveModal(null)}
@@ -148,17 +191,36 @@ export const ExtrasPad: React.FC<ExtrasPadProps> = ({ onScoreExtra }) => {
             </div>
 
             <div className="mt-3">
+              {/* Option: No Ball with No Run and No Ball Count */}
+              <button
+                type="button"
+                onClick={handleZeroRunNoBall}
+                className="w-full h-12 mb-3 rounded-md border-2 border-amber-500 bg-amber-50/80 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 text-left px-3 flex items-center justify-between transition-colors shadow-xs active:scale-[0.99]"
+              >
+                <div>
+                  <span className="text-xs font-bold text-amber-900 dark:text-amber-200 block">
+                    No Ball: 0 Run &amp; No Ball Count
+                  </span>
+                  <span className="text-[10px] text-amber-700/80 dark:text-amber-400/80 block">
+                    No run awarded &bull; Delivery not counted (Re-bowled)
+                  </span>
+                </div>
+                <span className="text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded">
+                  0 Run
+                </span>
+              </button>
+
               <span className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
                 Runs off the Bat:
               </span>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { r: 0, label: 'Nb (0)', sub: '1 run' },
-                  { r: 1, label: 'Nb + 1', sub: '2 runs' },
-                  { r: 2, label: 'Nb + 2', sub: '3 runs' },
-                  { r: 3, label: 'Nb + 3', sub: '4 runs' },
-                  { r: 4, label: 'Nb + 4', sub: '5 runs' },
-                  { r: 6, label: 'Nb + 6', sub: '7 runs' },
+                  { r: 0, label: 'Nb (0)', sub: `${noBallPenalty} run` },
+                  { r: 1, label: 'Nb + 1', sub: `${noBallPenalty + 1} runs` },
+                  { r: 2, label: 'Nb + 2', sub: `${noBallPenalty + 2} runs` },
+                  { r: 3, label: 'Nb + 3', sub: `${noBallPenalty + 3} runs` },
+                  { r: 4, label: 'Nb + 4', sub: `${noBallPenalty + 4} runs` },
+                  { r: 6, label: 'Nb + 6', sub: `${noBallPenalty + 6} runs` },
                 ].map(({ r, label, sub }) => (
                   <button
                     key={r}

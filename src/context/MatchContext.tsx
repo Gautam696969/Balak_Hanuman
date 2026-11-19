@@ -324,7 +324,7 @@ export function matchReducer(state: ExtendedState, action: ExtendedAction): Exte
 
       const innIndex = currentMatch.currentInningsIndex;
       const inn = { ...currentMatch.innings[innIndex] };
-      const { extraType, additionalRuns, runsOffBat = 0 } = action.payload;
+      const { extraType, additionalRuns, runsOffBat = 0, isZeroRunExtra = false } = action.payload;
 
       const battingTeam = inn.battingTeamId === 'teamA' ? currentMatch.teamA : currentMatch.teamB;
       const bowlingTeam = inn.bowlingTeamId === 'teamA' ? currentMatch.teamA : currentMatch.teamB;
@@ -335,10 +335,11 @@ export function matchReducer(state: ExtendedState, action: ExtendedAction): Exte
 
       const isWide = extraType === 'wd';
       const isNoBall = extraType === 'nb';
-      const isLegal =
-        (extraType === 'b' || extraType === 'lb') ||
-        (isWide && currentMatch.rules.rebowlWide === false) ||
-        (isNoBall && currentMatch.rules.rebowlNoBall === false);
+      const isLegal = isZeroRunExtra
+        ? false
+        : (extraType === 'b' || extraType === 'lb') ||
+          (isWide && currentMatch.rules.rebowlWide === false) ||
+          (isNoBall && currentMatch.rules.rebowlNoBall === false);
 
       const currentOverIndex = Math.floor(inn.legalBalls / 6);
       const legalBallNumber = isLegal ? (inn.legalBalls % 6) + 1 : inn.legalBalls % 6;
@@ -352,7 +353,10 @@ export function matchReducer(state: ExtendedState, action: ExtendedAction): Exte
       const newExtras = { ...inn.extras };
 
       if (isWide) {
-        extraRuns = (currentMatch.rules.wideRuns || 1) + additionalRuns;
+        const configuredWidePenalty =
+          currentMatch.rules.wideRuns !== undefined ? currentMatch.rules.wideRuns : 1;
+        const penalty = isZeroRunExtra ? 0 : configuredWidePenalty;
+        extraRuns = penalty + additionalRuns;
         totalBallRuns = extraRuns;
         newExtras.wides += extraRuns;
         newExtras.total += extraRuns;
@@ -362,7 +366,9 @@ export function matchReducer(state: ExtendedState, action: ExtendedAction): Exte
           newNonStrikerId = inn.strikerId;
         }
       } else if (isNoBall) {
-        const penalty = currentMatch.rules.noBallRuns || 1;
+        const configuredNoBallPenalty =
+          currentMatch.rules.noBallRuns !== undefined ? currentMatch.rules.noBallRuns : 1;
+        const penalty = isZeroRunExtra ? 0 : configuredNoBallPenalty;
         extraRuns = penalty;
         totalBallRuns = penalty + runsOffBat + additionalRuns;
         newExtras.noBalls += penalty + additionalRuns;

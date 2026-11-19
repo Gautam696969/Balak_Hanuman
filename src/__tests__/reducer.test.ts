@@ -7,6 +7,7 @@ import {
   Player,
 } from '../types/cricket';
 import { generateId, getAvailableBowlers } from '../utils/cricket';
+import { matchReducer, ExtendedState } from '../context/MatchContext';
 
 describe('Match Reducer Core Game Logic & Custom Rules', () => {
   const createMockMatch = (rulesOverrides?: Partial<MatchRules>, teamSize: number = 5): Match => {
@@ -231,5 +232,125 @@ describe('Match Reducer Core Game Logic & Custom Rules', () => {
     expect(match.teamA.players.some((p) => p.name === 'Kapil')).toBe(true);
     expect(inn.strikerId).toBe(newPlayer.id);
     expect(inn.wickets).toBe(1);
+  });
+
+  it('handles 0 run wide with no ball count (isZeroRunExtra: true)', () => {
+    const match = createMockMatch();
+    const initialState: ExtendedState = {
+      match,
+      historyStack: [],
+      activeTab: 'scoring',
+      selectedScorecardInnings: 1,
+      showNewBowlerModal: false,
+      showNewBatsmanModal: false,
+      replacingBatsmanRole: 'striker',
+      savedMatches: [],
+      darkMode: false,
+    };
+
+    const nextState = matchReducer(initialState, {
+      type: 'ADD_EXTRA',
+      payload: {
+        extraType: 'wd',
+        additionalRuns: 0,
+        isZeroRunExtra: true,
+      },
+    });
+
+    const inn = nextState.match!.innings[0];
+    expect(inn.totalRuns).toBe(0);
+    expect(inn.legalBalls).toBe(0);
+    expect(inn.oversFormatted).toBe('0.0');
+    expect(inn.extras.wides).toBe(0);
+    expect(inn.extras.total).toBe(0);
+    expect(inn.currentOverBalls.length).toBe(1);
+    expect(inn.currentOverBalls[0].isLegal).toBe(false);
+    expect(inn.currentOverBalls[0].extraRuns).toBe(0);
+    expect(inn.currentOverBalls[0].totalRuns).toBe(0);
+    expect(inn.currentOverBalls[0].displayLabel).toBe('Wd');
+  });
+
+  it('handles 0 run no-ball with not balling count (isZeroRunExtra: true)', () => {
+    const match = createMockMatch();
+    const initialState: ExtendedState = {
+      match,
+      historyStack: [],
+      activeTab: 'scoring',
+      selectedScorecardInnings: 1,
+      showNewBowlerModal: false,
+      showNewBatsmanModal: false,
+      replacingBatsmanRole: 'striker',
+      savedMatches: [],
+      darkMode: false,
+    };
+
+    const nextState = matchReducer(initialState, {
+      type: 'ADD_EXTRA',
+      payload: {
+        extraType: 'nb',
+        additionalRuns: 0,
+        runsOffBat: 0,
+        isZeroRunExtra: true,
+      },
+    });
+
+    const inn = nextState.match!.innings[0];
+    expect(inn.totalRuns).toBe(0);
+    expect(inn.legalBalls).toBe(0);
+    expect(inn.oversFormatted).toBe('0.0');
+    expect(inn.extras.noBalls).toBe(0);
+    expect(inn.extras.total).toBe(0);
+    expect(nextState.match!.isFreeHit).toBe(true);
+    expect(inn.currentOverBalls.length).toBe(1);
+    expect(inn.currentOverBalls[0].isLegal).toBe(false);
+    expect(inn.currentOverBalls[0].extraRuns).toBe(0);
+    expect(inn.currentOverBalls[0].totalRuns).toBe(0);
+    expect(inn.currentOverBalls[0].displayLabel).toBe('Nb');
+  });
+
+  it('handles match rules configured with 0 penalty runs for wide and no-ball', () => {
+    const match = createMockMatch({ wideRuns: 0, noBallRuns: 0 });
+    const initialState: ExtendedState = {
+      match,
+      historyStack: [],
+      activeTab: 'scoring',
+      selectedScorecardInnings: 1,
+      showNewBowlerModal: false,
+      showNewBatsmanModal: false,
+      replacingBatsmanRole: 'striker',
+      savedMatches: [],
+      darkMode: false,
+    };
+
+    // Standard wide with 0 penalty rule
+    const wideState = matchReducer(initialState, {
+      type: 'ADD_EXTRA',
+      payload: {
+        extraType: 'wd',
+        additionalRuns: 0,
+      },
+    });
+
+    const innWide = wideState.match!.innings[0];
+    expect(innWide.totalRuns).toBe(0);
+    expect(innWide.extras.wides).toBe(0);
+    expect(innWide.legalBalls).toBe(0);
+
+    // Standard no-ball with 0 penalty rule + 2 runs off bat
+    const nbState = matchReducer(wideState, {
+      type: 'ADD_EXTRA',
+      payload: {
+        extraType: 'nb',
+        additionalRuns: 0,
+        runsOffBat: 2,
+      },
+    });
+
+    const innNb = nbState.match!.innings[0];
+    // 0 from wide + 2 off bat from no ball (0 penalty) = 2 total runs
+    expect(innNb.totalRuns).toBe(2);
+    expect(innNb.extras.noBalls).toBe(0);
+    expect(innNb.legalBalls).toBe(0);
+    expect(nbState.match!.isFreeHit).toBe(true);
   });
 });

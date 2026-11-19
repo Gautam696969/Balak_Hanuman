@@ -250,7 +250,7 @@ export function getBowlerStats(innings: Innings, bowlingTeam: Team): BowlerStats
       runsChargedToBowler += ball.extraRuns;
     } else if (ball.extraType === 'nb') {
       stats.noBalls += 1;
-      runsChargedToBowler += 1;
+      runsChargedToBowler += ball.extraRuns !== undefined ? ball.extraRuns : 1;
     }
 
     stats.runsConceded += runsChargedToBowler;

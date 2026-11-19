@@ -75,7 +75,7 @@ export const ScoreHeader: React.FC<ScoreHeaderProps> = ({
   const bowlerRunsConceded = bowlerBalls.reduce((sum, b) => {
     let r = b.runsOffBat;
     if (b.extraType === 'wd') r += b.extraRuns;
-    if (b.extraType === 'nb') r += 1;
+    if (b.extraType === 'nb') r += b.extraRuns !== undefined ? b.extraRuns : (match.rules.noBallRuns ?? 1);
     return sum + r;
   }, 0);
   const bowlerWickets = bowlerBalls.filter((b) => b.wicket && b.wicket.type !== 'runOut' && b.wicket.type !== 'retiredHurt').length;
@@ -86,7 +86,7 @@ export const ScoreHeader: React.FC<ScoreHeaderProps> = ({
     const cur = bowlerOverRuns.get(o) || { runs: 0, legal: 0 };
     let r = b.runsOffBat;
     if (b.extraType === 'wd') r += b.extraRuns;
-    if (b.extraType === 'nb') r += 1;
+    if (b.extraType === 'nb') r += b.extraRuns !== undefined ? b.extraRuns : (match.rules.noBallRuns ?? 1);
     cur.runs += r;
     if (b.isLegal) cur.legal += 1;
     bowlerOverRuns.set(o, cur);
@@ -118,15 +118,11 @@ export const ScoreHeader: React.FC<ScoreHeaderProps> = ({
 
   return (
     <div className="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-      {/* 1. Header (48px): team short names, "Over 4.3 / 10", menu icon; small amber "FREE HIT" text badge when active */}
+      {/* 1. Header (48px): team short names, menu icon; small amber "FREE HIT" text badge when active */}
       <header className="h-12 px-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 text-xs">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-slate-900 dark:text-slate-100 uppercase tracking-wide">
             {team1Display} <span className="text-slate-400 font-normal">v</span> {team2Display}
-          </span>
-          <span className="text-slate-400">&bull;</span>
-          <span className="font-medium text-slate-600 dark:text-slate-400 tabular-nums">
-            Over {currentInnings.oversFormatted} / {match.rules.totalOvers}
           </span>
           {match.isFreeHit && (
             <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800">
@@ -231,9 +227,14 @@ export const ScoreHeader: React.FC<ScoreHeaderProps> = ({
           <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 font-medium">
             {battingTeam.name} &bull; {currentInnings.inningsNumber === 1 ? '1st Inn' : '2nd Inn'}
           </div>
-          <div className="text-4xl font-semibold tabular-nums text-slate-900 dark:text-slate-100 tracking-tight mt-0.5">
-            {currentInnings.totalRuns}
-            <span className="text-slate-400 font-normal">/{currentInnings.wickets}</span>
+          <div className="flex items-baseline gap-2.5 mt-0.5">
+            <div className="text-4xl font-semibold tabular-nums text-slate-900 dark:text-slate-100 tracking-tight">
+              {currentInnings.totalRuns}
+              <span className="text-slate-400 font-normal">/{currentInnings.wickets}</span>
+            </div>
+            <span className="text-base font-medium text-slate-500 dark:text-slate-400 tabular-nums">
+              ({currentInnings.oversFormatted} / {match.rules.totalOvers} ov)
+            </span>
           </div>
         </div>
 

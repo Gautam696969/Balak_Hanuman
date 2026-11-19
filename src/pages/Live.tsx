@@ -46,11 +46,12 @@ export const Live: React.FC = () => {
   const handleScoreExtra = (
     extraType: ExtraType,
     additionalRuns: number,
-    runsOffBat?: number
+    runsOffBat?: number,
+    isZeroRunExtra?: boolean
   ) => {
     dispatch({
       type: 'ADD_EXTRA',
-      payload: { extraType, additionalRuns, runsOffBat },
+      payload: { extraType, additionalRuns, runsOffBat, isZeroRunExtra },
     });
   };
 
