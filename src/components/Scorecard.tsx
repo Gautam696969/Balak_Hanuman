@@ -1,14 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useMatch } from '../context/MatchContext';
+import { Match } from '../types/cricket';
 import { getBatsmanStats, getBowlerStats, formatDismissalText } from '../utils/cricket';
 
-export const Scorecard: React.FC = () => {
-  const { match, selectedScorecardInnings, dispatch } = useMatch();
+interface ScorecardProps {
+  matchOverride?: Match;
+}
+
+export const Scorecard: React.FC<ScorecardProps> = ({ matchOverride }) => {
+  const context = useMatch();
+  const match = matchOverride || context.match;
+  const [internalInnings, setInternalInnings] = useState<1 | 2>(1);
 
   if (!match) return null;
 
-  const activeInningsNumber = selectedScorecardInnings;
+  const activeInningsNumber = matchOverride ? internalInnings : context.selectedScorecardInnings;
   const innings = match.innings[activeInningsNumber - 1];
+
+  const handleSelectInnings = (inn: 1 | 2) => {
+    if (matchOverride) {
+      setInternalInnings(inn);
+    } else {
+      context.dispatch({ type: 'SELECT_SCORECARD_INNINGS', payload: { inningsNumber: inn } });
+    }
+  };
 
   const battingTeam = innings.battingTeamId === 'teamA' ? match.teamA : match.teamB;
   const bowlingTeam = innings.bowlingTeamId === 'teamA' ? match.teamA : match.teamB;
@@ -22,9 +37,7 @@ export const Scorecard: React.FC = () => {
       <div className="p-1 rounded-md bg-slate-100 dark:bg-slate-800 flex gap-1">
         <button
           type="button"
-          onClick={() =>
-            dispatch({ type: 'SELECT_SCORECARD_INNINGS', payload: { inningsNumber: 1 } })
-          }
+          onClick={() => handleSelectInnings(1)}
           className={`flex-1 h-9 rounded text-xs transition-colors ${
             activeInningsNumber === 1
               ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-semibold shadow-sm'
@@ -35,9 +48,7 @@ export const Scorecard: React.FC = () => {
         </button>
         <button
           type="button"
-          onClick={() =>
-            dispatch({ type: 'SELECT_SCORECARD_INNINGS', payload: { inningsNumber: 2 } })
-          }
+          onClick={() => handleSelectInnings(2)}
           className={`flex-1 h-9 rounded text-xs transition-colors ${
             activeInningsNumber === 2
               ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-semibold shadow-sm'

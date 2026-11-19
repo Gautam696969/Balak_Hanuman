@@ -17,6 +17,7 @@ import {
   generateId,
   legalBallsToOvers,
 } from '../utils/cricket';
+import { syncMatchToCloud } from '../services/firebase';
 
 const CURRENT_MATCH_KEY = 'cricket_current_match_v3';
 const HISTORY_STACK_KEY = 'cricket_history_stack_v3';
@@ -1425,6 +1426,10 @@ export const MatchProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       if (state.match) {
         window.localStorage.setItem(CURRENT_MATCH_KEY, JSON.stringify(state.match));
+        // Auto-sync to Firebase Realtime Database for live spectator broadcast
+        syncMatchToCloud(state.match).catch((err) => {
+          console.warn('Realtime cloud sync error:', err);
+        });
       } else {
         window.localStorage.removeItem(CURRENT_MATCH_KEY);
       }

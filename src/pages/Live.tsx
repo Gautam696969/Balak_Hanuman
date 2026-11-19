@@ -11,6 +11,8 @@ import { NextBowlerSheet } from '../components/NextBowlerSheet';
 import { NextBatterSheet } from '../components/NextBatterSheet';
 import { InMatchEditModal } from '../components/InMatchEditModal';
 import { InningsBreakModal } from '../components/InningsBreakModal';
+import { ShareLiveMatchModal } from '../components/ShareLiveMatchModal';
+import { FirebaseConfigModal } from '../components/FirebaseConfigModal';
 import { ExtraType } from '../types/cricket';
 
 export const Live: React.FC = () => {
@@ -28,6 +30,8 @@ export const Live: React.FC = () => {
   const [showMidOverBowlerChange, setShowMidOverBowlerChange] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showEndInningsConfirm, setShowEndInningsConfirm] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showFirebaseModal, setShowFirebaseModal] = useState(false);
 
   // Quick player rename dialog state
   const [quickRenameData, setQuickRenameData] = useState<{
@@ -104,6 +108,8 @@ export const Live: React.FC = () => {
         onConfirmReset={() => setShowResetConfirm(true)}
         onRequestChangeBowler={() => setShowMidOverBowlerChange(true)}
         onQuickRenamePlayer={handleQuickRename}
+        onOpenShareModal={() => setShowShareModal(true)}
+        onOpenFirebaseConfig={() => setShowFirebaseModal(true)}
       />
 
       {/* Main Content */}
@@ -302,6 +308,22 @@ export const Live: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Share Live Match Dialog */}
+      <ShareLiveMatchModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        match={match}
+        onOpenFirebaseConfig={() => {
+          setShowShareModal(false);
+          setShowFirebaseModal(true);
+        }}
+      />
+
+      {/* Firebase Cloud Sync Configuration Dialog */}
+      <FirebaseConfigModal
+        isOpen={showFirebaseModal}
+        onClose={() => setShowFirebaseModal(false)}
+      />
     </div>
   );
 };

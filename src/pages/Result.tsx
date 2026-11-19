@@ -23,18 +23,20 @@ export const Result: React.FC = () => {
 
   const handleShare = async () => {
     tap();
-    const shareData = {
-      title: 'Cricket Match Result',
-      text: `${match.teamA.name} vs ${match.teamB.name}\n${team1.name}: ${inn1.totalRuns}/${inn1.wickets} (${inn1.oversFormatted})\n${team2.name}: ${inn2.totalRuns}/${inn2.wickets} (${inn2.oversFormatted})\nResult: ${resultText}`,
-    };
+    const spectatorUrl = `${window.location.origin}${window.location.pathname}?matchId=${encodeURIComponent(match.id)}&view=spectator`;
+    const shareText = `🏏 Cricket Match Result\n*${match.teamA.name} vs ${match.teamB.name}*\n${team1.name}: ${inn1.totalRuns}/${inn1.wickets} (${inn1.oversFormatted} ov)\n${team2.name}: ${inn2.totalRuns}/${inn2.wickets} (${inn2.oversFormatted} ov)\nResult: ${resultText}\n\nView Full Scorecard:\n${spectatorUrl}`;
 
     if (navigator.share) {
       try {
-        await navigator.share(shareData);
+        await navigator.share({
+          title: 'Cricket Match Result',
+          text: shareText,
+          url: spectatorUrl,
+        });
       } catch {}
     } else {
-      navigator.clipboard.writeText(shareData.text);
-      alert('Match result copied to clipboard.');
+      navigator.clipboard.writeText(shareText);
+      alert('Match result and scorecard link copied to clipboard.');
     }
   };
 

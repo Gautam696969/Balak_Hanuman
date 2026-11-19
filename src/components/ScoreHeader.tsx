@@ -8,6 +8,8 @@ import {
   MoreVertical,
   Pencil,
   RotateCcw,
+  Share2,
+  Database,
 } from 'lucide-react';
 import { useMatch } from '../context/MatchContext';
 import { useWakeLock } from '../hooks/useWakeLock';
@@ -24,6 +26,8 @@ interface ScoreHeaderProps {
   onConfirmReset: () => void;
   onRequestChangeBowler: () => void;
   onQuickRenamePlayer: (playerId: string, teamId: 'teamA' | 'teamB', currentName: string) => void;
+  onOpenShareModal?: () => void;
+  onOpenFirebaseConfig?: () => void;
 }
 
 export const ScoreHeader: React.FC<ScoreHeaderProps> = ({
@@ -31,6 +35,8 @@ export const ScoreHeader: React.FC<ScoreHeaderProps> = ({
   onConfirmReset,
   onRequestChangeBowler,
   onQuickRenamePlayer,
+  onOpenShareModal,
+  onOpenFirebaseConfig,
 }) => {
   const { match, dispatch, darkMode } = useMatch();
   const { isActive: isWakeLockActive, isSupported: isWakeLockSupported, toggleWakeLock } = useWakeLock();
@@ -164,6 +170,21 @@ export const ScoreHeader: React.FC<ScoreHeaderProps> = ({
             {darkMode ? <Sun size={18} strokeWidth={1.75} /> : <Moon size={18} strokeWidth={1.75} />}
           </button>
 
+          {onOpenShareModal && (
+            <button
+              type="button"
+              onClick={() => {
+                tap();
+                onOpenShareModal();
+              }}
+              title="Share Live Match"
+              className="p-1.5 text-orange-600 dark:text-orange-400 hover:text-orange-700 hover:bg-orange-50 dark:hover:bg-slate-800 rounded-md transition-colors"
+              aria-label="Share Live Match"
+            >
+              <Share2 size={18} strokeWidth={1.75} />
+            </button>
+          )}
+
           <div className="relative">
             <button
               type="button"
@@ -180,7 +201,33 @@ export const ScoreHeader: React.FC<ScoreHeaderProps> = ({
                   className="fixed inset-0 z-20"
                   onClick={() => setShowMenu(false)}
                 />
-                <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md shadow-sm z-30 py-1 text-xs">
+                <div className="absolute right-0 top-full mt-1 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md shadow-md z-30 py-1 text-xs">
+                  {onOpenShareModal && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowMenu(false);
+                        onOpenShareModal();
+                      }}
+                      className="w-full px-3 py-2 text-left text-orange-600 dark:text-orange-400 font-semibold hover:bg-orange-50 dark:hover:bg-slate-800 flex items-center gap-2"
+                    >
+                      <Share2 size={15} strokeWidth={1.75} />
+                      <span>Share Live Stream</span>
+                    </button>
+                  )}
+                  {onOpenFirebaseConfig && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowMenu(false);
+                        onOpenFirebaseConfig();
+                      }}
+                      className="w-full px-3 py-2 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
+                    >
+                      <Database size={15} strokeWidth={1.75} />
+                      <span>Firebase Cloud Sync</span>
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => {
@@ -190,7 +237,7 @@ export const ScoreHeader: React.FC<ScoreHeaderProps> = ({
                     className="w-full px-3 py-2 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
                   >
                     <Pencil size={15} strokeWidth={1.75} />
-                    <span>Match & Roster Settings</span>
+                    <span>Match &amp; Roster Settings</span>
                   </button>
                   <button
                     type="button"
