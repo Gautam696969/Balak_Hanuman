@@ -19,7 +19,7 @@ import { useHaptic } from '../hooks/useHaptic';
 import { generateId } from '../utils/cricket';
 
 // Default Group Team data (Balak Hanuman group teams)
-const DEFAULT_VIKAS_PLAYERS = ['Vikas', 'Rohit', 'Amit', 'Mohit', 'Bottle', 'Gautam', 'Manoj', 'Gopal', 'Avinash', 'Satyam', 'Pawan', 'Akshay','Pandey'];
+const DEFAULT_VIKAS_PLAYERS = ['Vikas', 'Rohit', 'Amit', 'Mohit', 'Bottle', 'Gautam', 'Manoj', 'Gopal', 'Avinash', 'Satyam', 'Pawan', 'Akshay','Vishal.P'];
 const DEFAULT_VIPUL_PLAYERS = ['Sashi', 'Vipul','JD', 'Bhavesh', 'Aman','Mohit', 'Vinay', 'Akshay',  'Pawan', 'Satyam', 'Gopal' ];
 
 interface GroupTeamDraft {
