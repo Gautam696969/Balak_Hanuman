@@ -31,6 +31,9 @@ export const Scorecard: React.FC<ScorecardProps> = ({ matchOverride }) => {
   const batsmanStats = getBatsmanStats(innings, battingTeam);
   const bowlerStats = getBowlerStats(innings, bowlingTeam);
 
+  const inn1BattingTeam = match.innings[0].battingTeamId === 'teamA' ? match.teamA : match.teamB;
+  const inn2BattingTeam = match.innings[1].battingTeamId === 'teamA' ? match.teamA : match.teamB;
+
   return (
     <div className="space-y-4 pb-20">
       {/* Innings Switch: Segmented control */}
@@ -44,7 +47,7 @@ export const Scorecard: React.FC<ScorecardProps> = ({ matchOverride }) => {
               : 'text-slate-600 dark:text-slate-400 font-normal'
           }`}
         >
-          {match.teamA.name} 1st Inn
+          {inn1BattingTeam.name} (1st)
         </button>
         <button
           type="button"
@@ -55,7 +58,7 @@ export const Scorecard: React.FC<ScorecardProps> = ({ matchOverride }) => {
               : 'text-slate-600 dark:text-slate-400 font-normal'
           }`}
         >
-          {match.teamB.name} 2nd Inn
+          {inn2BattingTeam.name} (2nd)
         </button>
       </div>
 
