@@ -14,6 +14,16 @@ export interface FirebaseConfig {
 
 const FIREBASE_CONFIG_STORAGE_KEY = 'BH_FIREBASE_CONFIG';
 
+const DEFAULT_FIREBASE_CONFIG: FirebaseConfig = {
+  apiKey: 'AIzaSyB4TAblcBijA8eR4g7m2ygyZLuHc5Ltk3s',
+  authDomain: 'bhg-scorer.firebaseapp.com',
+  databaseURL: 'https://bhg-scorer-default-rtdb.firebaseio.com',
+  projectId: 'bhg-scorer',
+  storageBucket: 'bhg-scorer.firebasestorage.app',
+  messagingSenderId: '641006901136',
+  appId: '1:641006901136:web:e6d0c47e18c4605df3c515',
+};
+
 // 1. Get stored config from localStorage or import.meta.env
 export function getFirebaseConfig(): FirebaseConfig | null {
   try {
@@ -32,20 +42,20 @@ export function getFirebaseConfig(): FirebaseConfig | null {
 
   // Check env vars
   const envConfig: FirebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
-    databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || '',
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-    appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || DEFAULT_FIREBASE_CONFIG.apiKey,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || DEFAULT_FIREBASE_CONFIG.authDomain,
+    databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || DEFAULT_FIREBASE_CONFIG.databaseURL,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || DEFAULT_FIREBASE_CONFIG.projectId,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || DEFAULT_FIREBASE_CONFIG.storageBucket,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || DEFAULT_FIREBASE_CONFIG.messagingSenderId,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID || DEFAULT_FIREBASE_CONFIG.appId,
   };
 
   if (envConfig.databaseURL || envConfig.projectId) {
     return envConfig;
   }
 
-  return null;
+  return DEFAULT_FIREBASE_CONFIG;
 }
 
 export function saveFirebaseConfig(config: FirebaseConfig): void {

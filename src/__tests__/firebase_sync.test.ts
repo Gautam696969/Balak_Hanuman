@@ -24,8 +24,10 @@ describe('Firebase Realtime Sync Service', () => {
     };
   });
 
-  it('reports not configured when localStorage and env are empty', () => {
-    expect(isFirebaseConfigured()).toBe(false);
+  it('reports configured with default project config', () => {
+    expect(isFirebaseConfigured()).toBe(true);
+    const config = getFirebaseConfig();
+    expect(config?.projectId).toBe('bhg-scorer');
   });
 
   it('saves and retrieves Firebase configuration correctly', () => {
