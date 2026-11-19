@@ -96,6 +96,14 @@ export function getFirebaseDb(): Database | null {
 }
 
 /**
+ * Helper to strip any undefined properties recursively
+ * Firebase Database set() throws an error if an object contains `undefined`.
+ */
+export function sanitizeForFirebase<T>(data: T): T {
+  return JSON.parse(JSON.stringify(data));
+}
+
+/**
  * Publish match state to Firebase Realtime Database
  */
 export async function syncMatchToCloud(match: Match): Promise<{ success: boolean; error?: string }> {
@@ -106,8 +114,9 @@ export async function syncMatchToCloud(match: Match): Promise<{ success: boolean
     }
 
     const matchRef = ref(db, `matches/${match.id}`);
+    const sanitizedMatch = sanitizeForFirebase(match);
     await set(matchRef, {
-      ...match,
+      ...sanitizedMatch,
       _syncedAt: Date.now(),
     });
 

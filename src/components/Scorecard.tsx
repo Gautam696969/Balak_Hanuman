@@ -143,7 +143,7 @@ export const Scorecard: React.FC<ScorecardProps> = ({ matchOverride }) => {
       </div>
 
       {/* Fall of Wickets */}
-      {innings.fallOfWickets.length > 0 && (
+      {innings.fallOfWickets && innings.fallOfWickets.length > 0 && (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-3 shadow-sm">
           <div className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-medium mb-1.5">
             Fall of Wickets

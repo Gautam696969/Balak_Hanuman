@@ -456,20 +456,30 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
             <div className="px-3 py-2 flex items-center justify-between bg-orange-50/20 dark:bg-orange-950/10">
               <div className="flex items-center gap-1.5 truncate">
                 <span className="w-2 h-2 rounded-full bg-orange-500 shrink-0" />
-                <span className="font-bold text-slate-900 dark:text-slate-100 truncate">
-                  {striker?.name || 'Striker'}
-                </span>
-                <span className="text-orange-600 dark:text-orange-400 font-extrabold">*</span>
+                {match.needsBatsmanSelection && match.dismissedBatsmanRole === 'striker' ? (
+                  <span className="text-amber-600 dark:text-amber-400 font-semibold italic text-xs animate-pulse">
+                    Waiting for new batter...
+                  </span>
+                ) : (
+                  <>
+                    <span className="font-bold text-slate-900 dark:text-slate-100 truncate">
+                      {striker?.name || 'Striker'}
+                    </span>
+                    <span className="text-orange-600 dark:text-orange-400 font-extrabold">*</span>
+                  </>
+                )}
               </div>
-              <div className="flex gap-4 font-mono text-right tabular-nums text-slate-700 dark:text-slate-300 shrink-0">
-                <span className="w-6 font-bold text-slate-900 dark:text-slate-100">
-                  {strikerStats.runs}
-                </span>
-                <span className="w-6 text-slate-400">{strikerStats.balls}</span>
-                <span className="w-4 text-slate-500">{strikerStats.fours}</span>
-                <span className="w-4 text-slate-500">{strikerStats.sixes}</span>
-                <span className="w-9 text-slate-500 text-[11px]">{strikerStats.sr.toFixed(1)}</span>
-              </div>
+              {(!match.needsBatsmanSelection || match.dismissedBatsmanRole !== 'striker') && (
+                <div className="flex gap-4 font-mono text-right tabular-nums text-slate-700 dark:text-slate-300 shrink-0">
+                  <span className="w-6 font-bold text-slate-900 dark:text-slate-100">
+                    {strikerStats.runs}
+                  </span>
+                  <span className="w-6 text-slate-400">{strikerStats.balls}</span>
+                  <span className="w-4 text-slate-500">{strikerStats.fours}</span>
+                  <span className="w-4 text-slate-500">{strikerStats.sixes}</span>
+                  <span className="w-9 text-slate-500 text-[11px]">{strikerStats.sr.toFixed(1)}</span>
+                </div>
+              )}
             </div>
 
             {/* Non-Striker */}
@@ -477,19 +487,27 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
               <div className="px-3 py-2 flex items-center justify-between">
                 <div className="flex items-center gap-1.5 truncate">
                   <span className="w-2 h-2 rounded-full bg-transparent shrink-0" />
-                  <span className="font-medium text-slate-700 dark:text-slate-300 truncate">
-                    {nonStriker.name}
-                  </span>
+                  {match.needsBatsmanSelection && match.dismissedBatsmanRole === 'nonStriker' ? (
+                    <span className="text-amber-600 dark:text-amber-400 font-semibold italic text-xs animate-pulse">
+                      Waiting for new batter...
+                    </span>
+                  ) : (
+                    <span className="font-medium text-slate-700 dark:text-slate-300 truncate">
+                      {nonStriker.name}
+                    </span>
+                  )}
                 </div>
-                <div className="flex gap-4 font-mono text-right tabular-nums text-slate-700 dark:text-slate-300 shrink-0">
-                  <span className="w-6 font-semibold text-slate-800 dark:text-slate-200">
-                    {nonStrikerStats.runs}
-                  </span>
-                  <span className="w-6 text-slate-400">{nonStrikerStats.balls}</span>
-                  <span className="w-4 text-slate-500">{nonStrikerStats.fours}</span>
-                  <span className="w-4 text-slate-500">{nonStrikerStats.sixes}</span>
-                  <span className="w-9 text-slate-500 text-[11px]">{nonStrikerStats.sr.toFixed(1)}</span>
-                </div>
+                {(!match.needsBatsmanSelection || match.dismissedBatsmanRole !== 'nonStriker') && (
+                  <div className="flex gap-4 font-mono text-right tabular-nums text-slate-700 dark:text-slate-300 shrink-0">
+                    <span className="w-6 font-semibold text-slate-800 dark:text-slate-200">
+                      {nonStrikerStats.runs}
+                    </span>
+                    <span className="w-6 text-slate-400">{nonStrikerStats.balls}</span>
+                    <span className="w-4 text-slate-500">{nonStrikerStats.fours}</span>
+                    <span className="w-4 text-slate-500">{nonStrikerStats.sixes}</span>
+                    <span className="w-9 text-slate-500 text-[11px]">{nonStrikerStats.sr.toFixed(1)}</span>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -642,7 +660,7 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
                           </p>
                           <span className="text-[10px] text-slate-400">
                             {ball.wicket
-                              ? `WICKET! ${ball.wicket.type}`
+                              ? `WICKET! ${ball.wicket.batsmanName ? `${ball.wicket.batsmanName} ` : ''}(${ball.wicket.description || ball.wicket.type})`
                               : ball.extraType === 'wd'
                               ? `Wide (${ball.extraRuns} run)`
                               : ball.extraType === 'nb'

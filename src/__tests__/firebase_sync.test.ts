@@ -3,6 +3,7 @@ import {
   getFirebaseConfig,
   saveFirebaseConfig,
   isFirebaseConfigured,
+  sanitizeForFirebase,
 } from '../services/firebase';
 
 describe('Firebase Realtime Sync Service', () => {
@@ -54,5 +55,41 @@ describe('Firebase Realtime Sync Service', () => {
     const url = new URL(spectatorUrl);
     expect(url.searchParams.get('matchId')).toBe('match_12345');
     expect(url.searchParams.get('view')).toBe('spectator');
+  });
+
+  it('sanitizeForFirebase strips all undefined properties from nested match objects', () => {
+    const rawMatchData = {
+      id: 'test_match_1',
+      needsBatsmanSelection: true,
+      dismissedBatsmanRole: 'striker',
+      innings: [
+        {
+          allBalls: [
+            {
+              id: 'ball_1',
+              runsOffBat: 0,
+              totalRuns: 0,
+              wicket: {
+                type: 'bowled',
+                batsmanId: 'p1',
+                batsmanName: 'Player 1',
+                fielderId: undefined, // undefined should be stripped!
+                fielderName: undefined, // undefined should be stripped!
+                bowlerId: 'b1',
+                bowlerName: 'Bowler 1',
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const sanitized = sanitizeForFirebase(rawMatchData);
+
+    expect(sanitized.id).toBe('test_match_1');
+    expect('fielderId' in (sanitized.innings[0].allBalls[0].wicket as any)).toBe(false);
+    expect('fielderName' in (sanitized.innings[0].allBalls[0].wicket as any)).toBe(false);
+    expect(sanitized.innings[0].allBalls[0].wicket.type).toBe('bowled');
+    expect(sanitized.innings[0].allBalls[0].wicket.batsmanName).toBe('Player 1');
   });
 });

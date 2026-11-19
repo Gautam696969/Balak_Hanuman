@@ -614,12 +614,12 @@ export function matchReducer(state: ExtendedState, action: ExtendedAction): Exte
         batsmanName: outBatsman?.name || 'Batsman',
         bowlerId: inn.currentBowlerId,
         bowlerName: bowler?.name || 'Bowler',
-        fielderId,
-        fielderName: fielder?.name,
         runsCompleted,
         outBatsmanIsStriker: isStrikerOut,
         description: '',
       };
+      if (fielderId) dismissal.fielderId = fielderId;
+      if (fielder?.name) dismissal.fielderName = fielder.name;
       dismissal.description = formatDismissalText(dismissal);
 
       inn.fallOfWickets = [

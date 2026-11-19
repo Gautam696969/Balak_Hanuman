@@ -151,27 +151,32 @@ export function normalizeMatch(data: any): Match {
     ...data,
     teamA: {
       ...data.teamA,
-      players: Array.isArray(data.teamA?.players)
+      players: (Array.isArray(data.teamA?.players)
         ? data.teamA.players
-        : Object.values(data.teamA?.players || {}),
+        : Object.values(data.teamA?.players || {})
+      ).filter(Boolean),
     },
     teamB: {
       ...data.teamB,
-      players: Array.isArray(data.teamB?.players)
+      players: (Array.isArray(data.teamB?.players)
         ? data.teamB.players
-        : Object.values(data.teamB?.players || {}),
+        : Object.values(data.teamB?.players || {})
+      ).filter(Boolean),
     },
     innings: rawInnings.map((inn: any) => ({
       ...inn,
-      allBalls: Array.isArray(inn?.allBalls)
+      allBalls: (Array.isArray(inn?.allBalls)
         ? inn.allBalls
-        : Object.values(inn?.allBalls || {}),
-      currentOverBalls: Array.isArray(inn?.currentOverBalls)
+        : Object.values(inn?.allBalls || {})
+      ).filter(Boolean),
+      currentOverBalls: (Array.isArray(inn?.currentOverBalls)
         ? inn.currentOverBalls
-        : Object.values(inn?.currentOverBalls || {}),
-      fallOfWickets: Array.isArray(inn?.fallOfWickets)
+        : Object.values(inn?.currentOverBalls || {})
+      ).filter(Boolean),
+      fallOfWickets: (Array.isArray(inn?.fallOfWickets)
         ? inn.fallOfWickets
-        : Object.values(inn?.fallOfWickets || {}),
+        : Object.values(inn?.fallOfWickets || {})
+      ).filter(Boolean),
       extras: inn?.extras || { wides: 0, noBalls: 0, byes: 0, legByes: 0, total: 0 },
     })) as [Innings, Innings],
   };
