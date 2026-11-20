@@ -1,11 +1,13 @@
 import React from 'react';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Maximize, Minimize } from 'lucide-react';
 import { useMatch } from '../context/MatchContext';
 import { useHaptic } from '../hooks/useHaptic';
+import { useFullscreen } from '../hooks/useFullscreen';
 
 export const AppHeader: React.FC = () => {
   const { match, darkMode, dispatch } = useMatch();
   const { tap } = useHaptic();
+  const { isFullscreen, toggleFullscreen } = useFullscreen();
 
   const isLive = match && match.status === 'live';
 
@@ -37,6 +39,23 @@ export const AppHeader: React.FC = () => {
               Live
             </span>
           )}
+
+          <button
+            type="button"
+            onClick={() => {
+              tap();
+              toggleFullscreen();
+            }}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-slate-800 transition-colors active:scale-95"
+            aria-label={isFullscreen ? 'Exit Full Screen' : 'Enter Full Screen'}
+            title={isFullscreen ? 'Exit Full Screen' : 'Full Screen'}
+          >
+            {isFullscreen ? (
+              <Minimize size={17} strokeWidth={2} className="text-orange-600 dark:text-orange-400" />
+            ) : (
+              <Maximize size={17} strokeWidth={2} />
+            )}
+          </button>
 
           <button
             type="button"

@@ -5,6 +5,8 @@ import {
   EyeOff,
   Sun,
   Moon,
+  Maximize,
+  Minimize,
   MoreVertical,
   Pencil,
   RotateCcw,
@@ -14,6 +16,7 @@ import {
 import { useMatch } from '../context/MatchContext';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { useHaptic } from '../hooks/useHaptic';
+import { useFullscreen } from '../hooks/useFullscreen';
 import {
   calculateEconomy,
   calculateRequiredRunRate,
@@ -41,6 +44,7 @@ export const ScoreHeader: React.FC<ScoreHeaderProps> = ({
   const { match, dispatch, darkMode } = useMatch();
   const { isActive: isWakeLockActive, isSupported: isWakeLockSupported, toggleWakeLock } = useWakeLock();
   const { tap } = useHaptic();
+  const { isFullscreen, toggleFullscreen } = useFullscreen();
   const [showMenu, setShowMenu] = useState(false);
 
   if (!match) return null;
@@ -161,6 +165,23 @@ export const ScoreHeader: React.FC<ScoreHeaderProps> = ({
             type="button"
             onClick={() => {
               tap();
+              toggleFullscreen();
+            }}
+            title={isFullscreen ? 'Exit Full Screen' : 'Enter Full Screen'}
+            className="p-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 rounded-md transition-colors active:scale-95"
+            aria-label={isFullscreen ? 'Exit Full Screen' : 'Enter Full Screen'}
+          >
+            {isFullscreen ? (
+              <Minimize size={18} strokeWidth={1.75} className="text-orange-600 dark:text-orange-400" />
+            ) : (
+              <Maximize size={18} strokeWidth={1.75} />
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              tap();
               dispatch({ type: 'TOGGLE_DARK_MODE' });
             }}
             title="Toggle theme"
@@ -228,6 +249,18 @@ export const ScoreHeader: React.FC<ScoreHeaderProps> = ({
                       <span>Firebase Cloud Sync</span>
                     </button>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowMenu(false);
+                      tap();
+                      toggleFullscreen();
+                    }}
+                    className="w-full px-3 py-2 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
+                  >
+                    {isFullscreen ? <Minimize size={15} strokeWidth={1.75} /> : <Maximize size={15} strokeWidth={1.75} />}
+                    <span>{isFullscreen ? 'Exit Full Screen' : 'Full Screen Mode'}</span>
+                  </button>
                   <button
                     type="button"
                     onClick={() => {

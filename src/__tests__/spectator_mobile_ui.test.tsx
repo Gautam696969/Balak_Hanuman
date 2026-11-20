@@ -207,6 +207,9 @@ describe('SpectatorView Mobile UI Tests', () => {
     expect(html).toContain('Scorecard');
     expect(html).toContain('Match Info');
 
+    // Check Full Screen Button
+    expect(html).toContain('Full Screen');
+
     // Check WhatsApp Share Bar
     expect(html).toContain('Share Live Match on WhatsApp');
   });

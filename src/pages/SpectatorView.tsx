@@ -15,6 +15,8 @@ import {
   Zap,
   Flame,
   Award,
+  Maximize,
+  Minimize,
 } from 'lucide-react';
 import { Match, Ball } from '../types/cricket';
 import {
@@ -30,6 +32,7 @@ import {
   normalizeMatch,
 } from '../utils/cricket';
 import { Scorecard } from '../components/Scorecard';
+import { useFullscreen } from '../hooks/useFullscreen';
 
 interface SpectatorViewProps {
   matchId: string;
@@ -55,6 +58,7 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
     }
     return false;
   });
+  const { isFullscreen, toggleFullscreen } = useFullscreen();
 
   // Toggle theme
   const handleToggleTheme = () => {
@@ -420,6 +424,20 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
               className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all"
             >
               <RefreshCw size={15} className={isRefreshing ? 'animate-spin text-orange-600' : ''} />
+            </button>
+
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              title={isFullscreen ? 'Exit Full Screen' : 'Full Screen'}
+              aria-label={isFullscreen ? 'Exit Full Screen' : 'Full Screen'}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all"
+            >
+              {isFullscreen ? (
+                <Minimize size={16} className="text-orange-600 dark:text-orange-400" />
+              ) : (
+                <Maximize size={16} />
+              )}
             </button>
 
             <button
