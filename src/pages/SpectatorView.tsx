@@ -40,6 +40,8 @@ interface SpectatorViewProps {
   onExitSpectatorMode?: () => void;
 }
 
+const DARK_MODE_KEY = 'balak_hanuman_theme_v1';
+
 export const SpectatorView: React.FC<SpectatorViewProps> = ({
   matchId,
   initialMatch,
@@ -53,24 +55,51 @@ export const SpectatorView: React.FC<SpectatorViewProps> = ({
   const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
   const [hasNewUpdate, setHasNewUpdate] = useState(false);
   const [darkMode, setDarkMode] = useState<boolean>(() => {
-    if (typeof document !== 'undefined') {
-      return document.documentElement.classList.contains('dark');
+    const storage = typeof window !== 'undefined' ? window.localStorage : (typeof localStorage !== 'undefined' ? localStorage : null);
+    if (storage) {
+      try {
+        const stored = storage.getItem(DARK_MODE_KEY);
+        if (stored !== null) {
+          const isDark = JSON.parse(stored);
+          if (typeof document !== 'undefined') {
+            if (isDark) {
+              document.documentElement.classList.add('dark');
+            } else {
+              document.documentElement.classList.remove('dark');
+            }
+          }
+          return isDark;
+        }
+      } catch {
+        // ignore
+      }
     }
-    return false;
+    return typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
   });
   const { isFullscreen, toggleFullscreen } = useFullscreen();
 
-  // Toggle theme
-  const handleToggleTheme = () => {
-    const nextDark = !darkMode;
-    setDarkMode(nextDark);
+  // Sync theme changes to DOM and localStorage
+  useEffect(() => {
+    const storage = typeof window !== 'undefined' ? window.localStorage : (typeof localStorage !== 'undefined' ? localStorage : null);
+    if (storage) {
+      try {
+        storage.setItem(DARK_MODE_KEY, JSON.stringify(darkMode));
+      } catch (e) {
+        console.warn('Failed saving darkMode in spectator:', e);
+      }
+    }
     if (typeof document !== 'undefined') {
-      if (nextDark) {
+      if (darkMode) {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
     }
+  }, [darkMode]);
+
+  // Toggle theme
+  const handleToggleTheme = () => {
+    setDarkMode((prev) => !prev);
   };
 
   // Manual refresh

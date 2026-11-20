@@ -10,6 +10,16 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="theme-color" content="#e57008" />
     <meta name="description" content="Minimal, professional Cricket Umpire and Scorer web application" />
+    <script>
+      (function() {
+        try {
+          var stored = localStorage.getItem('balak_hanuman_theme_v1');
+          if (stored !== null && JSON.parse(stored) === true) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">

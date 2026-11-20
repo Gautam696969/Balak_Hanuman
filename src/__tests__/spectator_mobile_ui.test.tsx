@@ -243,4 +243,25 @@ describe('SpectatorView Mobile UI Tests', () => {
     expect(html).toContain('49');
     expect(html).toContain('Need 24 from 42 balls');
   });
+
+  it('preserves dark mode from localStorage after refresh', () => {
+    // Simulate dark mode saved in localStorage
+    (global as any).localStorage = {
+      getItem: (key: string) => {
+        if (key === 'balak_hanuman_theme_v1') return JSON.stringify(true);
+        return null;
+      },
+      setItem: () => {},
+      removeItem: () => {},
+      clear: () => {},
+    };
+
+    const rawHtml = ReactDOMServer.renderToString(
+      <SpectatorView matchId="match_mobile_1" initialMatch={mockMatch} />
+    );
+
+    // When darkMode is true, the theme toggle button renders the Sun icon (to switch back to light)
+    // and title/aria-label for toggle theme
+    expect(rawHtml).toContain('lucide-sun');
+  });
 });
